@@ -3,15 +3,42 @@
  */
 plugins {
     kotlin("jvm") version "1.9.21"
+    id("io.ktor.plugin") version "2.3.7"
     application
 }
-dependencies {
-}
+
+val ktorVersion = "2.3.7"
+val aapLibVersion = "3.7.116"
 
 application {
     // Define the main class for the application.
     mainClass.set("oppslag.AppKt")
 }
+
+dependencies {
+    implementation("io.ktor:ktor-server-auth:$ktorVersion")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
+    implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
+    implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-server-core:$ktorVersion")
+    implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
+    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
+
+    implementation("io.ktor:ktor-client-auth:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
+    implementation("io.ktor:ktor-client-logging:$ktorVersion")
+
+    implementation("com.github.navikt.aap-libs:ktor-auth-tokenx:$aapLibVersion")
+
+    implementation("io.micrometer:micrometer-registry-prometheus:1.12.1")
+    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.0")
+}
+
 repositories {
     mavenCentral()
     maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")

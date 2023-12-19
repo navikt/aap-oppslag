@@ -1,6 +1,6 @@
 package oppslag.integrasjoner.behandler
 
-import innsending.http.HttpClientFactory
+import oppslag.http.HttpClientFactory
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*

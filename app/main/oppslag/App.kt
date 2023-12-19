@@ -2,8 +2,8 @@ package oppslag
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import innsending.auth.TOKENX
-import innsending.auth.authentication
+import oppslag.auth.TOKENX
+import oppslag.auth.authentication
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*

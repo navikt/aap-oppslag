@@ -1,4 +1,4 @@
-package innsending.auth
+package oppslag.auth
 
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
@@ -8,11 +8,11 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
 import no.nav.aap.ktor.client.TokenXProviderConfig
+import oppslag.SECURE_LOGGER
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 const val TOKENX = "tokenx"
-val SECURE_LOGGER = org.slf4j.LoggerFactory.getLogger("secureLog")
 internal fun ApplicationCall.personident(): String {
     return requireNotNull(principal<JWTPrincipal>()) {
         "principal mangler i ktor auth"

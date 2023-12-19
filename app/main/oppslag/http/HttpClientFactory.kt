@@ -1,4 +1,4 @@
-package innsending.http
+package oppslag.http
 
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature

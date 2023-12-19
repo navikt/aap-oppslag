@@ -10,7 +10,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClass.set("oppslag.app.AppKt")
+    mainClass.set("oppslag.AppKt")
 }
 repositories {
     mavenCentral()
@@ -26,3 +26,7 @@ tasks {
     }
 }
 
+kotlin.sourceSets["main"].kotlin.srcDirs("main")
+kotlin.sourceSets["test"].kotlin.srcDirs("test")
+sourceSets["main"].resources.srcDirs("main")
+sourceSets["test"].resources.srcDirs("test")

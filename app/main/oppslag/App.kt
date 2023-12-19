@@ -1,0 +1,4 @@
+package oppslag
+
+class App {
+}

@@ -19,7 +19,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
-import oppslag.routes.actuator
+import oppslag.integrasjoner.behandler.BehandlerClient
+import oppslag.integrasjoner.krr.KontaktinformasjonClient
+import oppslag.integrasjoner.pdl.PdlGraphQLClient
+import oppslag.routes.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
@@ -36,7 +39,9 @@ fun Application.api(
     config: Config = Config(),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-
+    val pdl = PdlGraphQLClient(config.PdlConfig,config.tokenx)
+    val krr = KontaktinformasjonClient(config.tokenx, config.KrrConfig)
+    val behandler = BehandlerClient(config.tokenx, config.BehandlerConfig)
 
     install(MicrometerMetrics) { registry = prometheus }
 
@@ -74,9 +79,10 @@ fun Application.api(
 
     routing {
         authenticate(TOKENX) {
-
+            pdlRoute(pdl)
+            behandlerRoute(behandler)
+            krrRoute(krr)
         }
-
         actuator(prometheus)
     }
 

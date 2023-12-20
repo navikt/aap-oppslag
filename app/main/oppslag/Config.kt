@@ -13,7 +13,9 @@ data class Config(
         jwksUrl = URI(getEnvVar("TOKEN_X_WELL_KNOWN_URL")).toURL(),
         issuer = getEnvVar("TOKEN_X_ISSUER"),
     ),
-    val PdlConfig: PdlConfig = PdlConfig()
+    val PdlConfig: PdlConfig = PdlConfig(),
+    val KrrConfig: KrrConfig = KrrConfig(),
+    val BehandlerConfig: BehandlerConfig = BehandlerConfig(),
     )
 
 

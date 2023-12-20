@@ -1,6 +1,6 @@
 package oppslag.integrasjoner.behandler
 
-data class BehandlerDTO(
+data class BehandlerRespons(
     val type: String,
     val kategori: String,
     val behandlerRef: String,

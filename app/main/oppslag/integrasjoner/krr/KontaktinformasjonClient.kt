@@ -11,7 +11,6 @@ import kotlinx.coroutines.runBlocking
 import no.nav.aap.ktor.client.TokenXProviderConfig
 import no.nav.aap.ktor.client.TokenXTokenProvider
 import oppslag.KrrConfig
-import oppslag.integrasjoner.krr.Kontaktinformasjon.Companion.EMPTY
 
 
 
@@ -50,29 +49,5 @@ class KontaktinformasjonClient(tokenXProviderConfig: TokenXProviderConfig, priva
 }
 
 
-data class KrrRespons(
-    val reservert: Boolean? = null,
-    val kanVarsles: Boolean? = false,
-    val aktiv: Boolean? = false,
-    @JsonAlias("epostadresse") val epost: String? = null,
-    @JsonAlias("mobiltelefonnummer") val mobil: String? = null
-) {
-    fun tilKontaktinfo() = //TODO: sjekk reservert
-        when (aktiv) {
-            true -> when (kanVarsles) {
-                true -> Kontaktinformasjon(epost, mobil)
-                else -> EMPTY
-            }
-            else -> EMPTY
-        }
-}
 
-data class Kontaktinformasjon(
-    val epost: String? = null,
-    val mobil: String? = null
-) {
-    companion object {
-        val EMPTY = Kontaktinformasjon()
-    }
-}
 

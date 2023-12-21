@@ -31,10 +31,10 @@ internal data class PdlData(
 internal data class PdlPerson(
     val adressebeskyttelse: List<Adressebeskyttelse>?,
     val navn: List<PdlNavn>?,
-    val bostedsadresse: List<PdlBostedsadresse>?,
+    val bostedsadresse: List<PdlBostedsadresse>?=null,
     val foedsel: List<PdlFoedsel>?,
-    val foreldreBarnRelasjon: List<PdlForelderBarnRelasjon>?,
-    val fnr: String?,
+    val foreldreBarnRelasjon: List<PdlForelderBarnRelasjon>?=null,
+    val fnr: String?=null,
     val doedsfall: Set<PDLDødsfall>?=null
 ) {
     fun toSøker(): Søker {
@@ -50,6 +50,17 @@ internal data class PdlPerson(
             fødseldato = fødselsdato
         )
     }
+
+    fun toBarn(): Barn {
+        val adresse = bostedsadresse?.firstOrNull()?.vegadresse?.adresse()
+        val fødselsdato = foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it) }
+        return Barn(
+            navn = this.fulltNavn() ?: "",
+            fnr = fnr ?: "",
+            fødselsdato = fødselsdato
+        )
+    }
+
     fun fulltNavn(): String? = navn?.firstOrNull()?.let { "${it.fornavn} ${it.mellomnavn ?: ""} ${it.etternavn}" }
     fun myndig():Boolean = this.foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it).plusYears(18) }?.isBefore(LocalDate.now()) ?: false
     fun beskyttet() = this.adressebeskyttelse?.any {

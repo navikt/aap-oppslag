@@ -21,7 +21,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
         }
         get("/barn") {
             val personIdent = call.personident()
-            call.respond(HttpStatusCode.OK, pdl.hentBarn(personIdent, "12345678910"))
+            call.respond(HttpStatusCode.OK, pdl.hentBarn(personIdent, call.authentication.toString()))
         }
     }
 }

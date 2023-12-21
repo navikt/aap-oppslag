@@ -70,11 +70,11 @@ private val barn = """
             foedsel {
                 foedselsdato
             },
-             navn {
-                fornavn,
-                etternavn,
-                mellomnavn
-            }
+            navn {
+               fornavn,
+               etternavn,
+               mellomnavn
+           }
         }
     }
 """.trimIndent()

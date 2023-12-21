@@ -31,7 +31,7 @@ class PdlGraphQLClient(private val pdlConfig: PdlConfig, tokenXProviderConfig: T
             .filter { it.myndig() } //TODO: filtrer død og adressebeskyttelse også kinda
             .filter { it.beskyttet().not() }
             .filter { it.død().not() }
-        return barn.map { Barn(it.fulltNavn(),LocalDate.parse(it.foedsel?.firstOrNull()?.foedselsdato),it.fnr) }
+        return barn.map { it.toBarn() }
     }
 
     private suspend fun hentBarnRelasjon(personident: String, tokenXToken:String) = query(PdlRequest.hentBarnRelasjon(personident),tokenXToken).data?.hentPdlPerson?.foreldreBarnRelasjon

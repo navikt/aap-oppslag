@@ -35,7 +35,7 @@ class BehandlerClient(tokenXProviderConfig: TokenXProviderConfig, private val be
                 val obotoken = tokenProvider.getOnBehalfOfToken(tokenXToken)
                 val response = httpClient.get("${behandlerConfig.baseUrl}/rest/v1/person") {
                     accept(ContentType.Application.Json)
-                    header("Nav-Callid", callId)
+                    header("Nav-Callid", callId) //TODO: sjekk om dette er riktig
                     bearerAuth(obotoken)
                 }
                 if (response.status.isSuccess() || response.status.value == 409) {

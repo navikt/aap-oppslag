@@ -21,6 +21,7 @@ import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.krr.KontaktinformasjonClient
+import oppslag.integrasjoner.pdl.PdlException
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
 import oppslag.routes.*
 import org.slf4j.Logger
@@ -39,7 +40,7 @@ fun Application.api(
     config: Config = Config(),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-    val pdl = PdlGraphQLClient(config.PdlConfig,config.tokenx)
+    val pdl = PdlGraphQLClient(config.tokenx, config.PdlConfig)
     val krr = KontaktinformasjonClient(config.tokenx, config.KrrConfig)
     val behandler = BehandlerClient(config.tokenx, config.BehandlerConfig)
 
@@ -57,13 +58,16 @@ fun Application.api(
                 Method:         ${call.request.httpMethod.value}
                 User-agent:     ${call.request.headers["User-Agent"]}
                 CallId:         ${call.request.header("x-callId") ?: call.request.header("nav-callId")}
-                Authorization:  ${call.request.header("Authorization")}
             """.trimIndent()
         }
         filter { call -> call.request.path().startsWith("/actuator").not() }
     }
 
     install(StatusPages) {
+        exception<PdlException>{ call, cause ->
+            SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
+            call.respondText(text = "Feil i PDL: ${cause.message}", status = HttpStatusCode.InternalServerError)
+        }
         exception<Throwable> { call, cause ->
             SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
             call.respondText(text = "Feil i tjeneste: ${cause.message}", status = HttpStatusCode.InternalServerError)

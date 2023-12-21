@@ -20,6 +20,12 @@ internal fun ApplicationCall.personident(): String {
         ?: error("pid mangler i tokenx claims")
 }
 
+internal fun ApplicationCall.authToken():String {
+    return requireNotNull(this.request.headers["Authorization"]) {
+        "Authorization header mangler"
+    }.split(" ")[1]
+}
+
 fun Application.authentication(config: TokenXProviderConfig) {
     val idPortenProvider: JwkProvider = JwkProviderBuilder(config.jwksUrl)
         .cached(10, 24, TimeUnit.HOURS)

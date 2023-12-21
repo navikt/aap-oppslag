@@ -3,7 +3,6 @@ package oppslag.integrasjoner.krr
 import com.fasterxml.jackson.annotation.JsonAlias
 
 data class KrrRespons(
-    val reservert: Boolean? = null,
     val kanVarsles: Boolean? = false,
     val aktiv: Boolean? = false,
     @JsonAlias("epostadresse") val epost: String? = null,

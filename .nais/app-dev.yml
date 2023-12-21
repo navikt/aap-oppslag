@@ -23,9 +23,6 @@ spec:
     requests:
       cpu: 500m
       memory: 512Mi
-  kafka:
-    pool: {{kafka-pool}}
-    streams: true
   liveness:
     path: /actuator/live
     initialDelay: 3
@@ -41,3 +38,16 @@ spec:
     path: /actuator/metrics
   secureLogs:
     enabled: true
+  env:
+    - name: PDL_BASE_URL
+      value: https://pdl-api.${env}-fss-pub.nais.io/graphql
+    - name: PDL_SCOPE
+      value: api://${env}-fss.pdl.pdl-api/.default
+    - name: KRR_BASE_URL
+      value: http://digdir-krr-proxy.team-rocket
+    - name: KRR_SCOPE
+      value: dev-gcp:team-rocket:digdir-krr-proxy
+    - name: BEHANDLER_BASE_URL
+      value: http://isdialogmelding.teamsykefravr
+    - name: BEHANDLER_SCOPE
+      value: dev-gcp:teamsykefravr:isdialogmelding

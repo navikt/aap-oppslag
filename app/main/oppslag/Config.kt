@@ -34,7 +34,3 @@ data class BehandlerConfig(
     val scope: String = getEnvVar("BEHANDLER_SCOPE")
 )
 
-data class JoarkConfig(
-    val baseUrl: String = getEnvVar("JOARK_BASE_URL"),
-    val scope: String = getEnvVar("JOARK_SCOPE")
-)

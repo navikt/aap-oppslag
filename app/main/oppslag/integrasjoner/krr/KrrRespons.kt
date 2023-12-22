@@ -8,16 +8,10 @@ data class KrrRespons(
     @JsonAlias("epostadresse") val epost: String? = null,
     @JsonAlias("mobiltelefonnummer") val mobil: String? = null
 ) {
-    fun tilKontaktinfo() = //TODO: sjekk reservert
-        if (aktiv==true && kanVarsles==true) {
+    fun tilKontaktinfo() =
+        if (aktiv == true && kanVarsles == true) {
             Kontaktinformasjon(epost, mobil)
         } else {
             Kontaktinformasjon()
         }
 }
-
-
-data class Kontaktinformasjon(
-    val epost: String? = null,
-    val mobil: String? = null
-)

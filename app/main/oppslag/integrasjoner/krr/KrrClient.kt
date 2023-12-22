@@ -1,7 +1,5 @@
 package oppslag.integrasjoner.krr
 
-import com.fasterxml.jackson.annotation.JsonAlias
-import oppslag.http.HttpClientFactory
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -11,8 +9,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.aap.ktor.client.TokenXProviderConfig
 import no.nav.aap.ktor.client.TokenXTokenProvider
 import oppslag.KrrConfig
-
-
+import oppslag.http.HttpClientFactory
 
 private const val KRR_CLIENT_SECONDS_METRICNAME = "krr_client_seconds"
 private val clientLatencyStats: Summary = Summary.build()
@@ -23,11 +20,11 @@ private val clientLatencyStats: Summary = Summary.build()
     .help("Latency krr, in seconds")
     .register()
 
-class KontaktinformasjonClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfig: KrrConfig) {
+class KrrClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfig: KrrConfig) {
     private val httpClient = HttpClientFactory.create()
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, krrConfig.scope, httpClient)
 
-    fun hentKrr(
+    fun hentKontaktinformasjon(
         tokenXToken: String,
         callId: String
     ): KrrRespons =
@@ -47,7 +44,3 @@ class KontaktinformasjonClient(tokenXProviderConfig: TokenXProviderConfig, priva
             }
         }
 }
-
-
-
-

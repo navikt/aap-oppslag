@@ -25,12 +25,17 @@ internal fun PdlPerson.toBarn(): Barn {
     )
 }
 
-internal fun PdlPerson.fulltNavn(): String? = navn?.firstOrNull()?.let { "${it.fornavn} ${it.mellomnavn ?: ""} ${it.etternavn}" }
-internal fun PdlPerson.myndig():Boolean = this.foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it).plusYears(18) }?.isBefore(
-    LocalDate.now()) ?: false
+internal fun PdlPerson.fulltNavn(): String? =
+    navn?.firstOrNull()?.let { "${it.fornavn} ${it.mellomnavn ?: ""} ${it.etternavn}" }
+
+internal fun PdlPerson.myndig(): Boolean =
+    this.foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it).plusYears(18) }?.isBefore(
+        LocalDate.now()
+    ) ?: false
+
 internal fun PdlPerson.beskyttet() = this.adressebeskyttelse?.any {
     it.gradering in listOf("FORTROLIG", "STRENGT_FORTROLIG_UTLAND", "STRENGT_FORTROLIG")
-} == true
+} ?: false
 
 internal fun PdlPerson.død() = this.doedsfall?.any() ?: false
 

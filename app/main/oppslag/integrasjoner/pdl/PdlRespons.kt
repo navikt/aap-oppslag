@@ -3,7 +3,6 @@ package oppslag.integrasjoner.pdl
 import com.fasterxml.jackson.annotation.JsonProperty
 import java.time.LocalDate
 
-
 internal data class PdlResponse(
     val data: PdlData?,
     val errors: List<PdlError>?,
@@ -34,9 +33,11 @@ internal data class PdlForelderBarnRelasjon(
 internal data class PdlFoedsel(
     val foedselsdato: String?
 )
+
 internal data class PdlBostedsadresse(
     val vegadresse: PdlVegadresse?
 )
+
 internal data class PdlVegadresse(
     val adressenavn: String,
     val husbokstav: String?,
@@ -47,6 +48,7 @@ internal data class PdlVegadresse(
 internal data class Adressebeskyttelse(
     val gradering: String
 )
+
 internal data class PdlNavn(
     val fornavn: String,
     val etternavn: String,

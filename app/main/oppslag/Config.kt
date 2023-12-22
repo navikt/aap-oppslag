@@ -13,10 +13,10 @@ data class Config(
         jwksUrl = URI(getEnvVar("TOKEN_X_WELL_KNOWN_URL")).toURL(),
         issuer = getEnvVar("TOKEN_X_ISSUER"),
     ),
-    val PdlConfig: PdlConfig = PdlConfig(),
-    val KrrConfig: KrrConfig = KrrConfig(),
-    val BehandlerConfig: BehandlerConfig = BehandlerConfig(),
-    )
+    val pdlConfig: PdlConfig = PdlConfig(),
+    val krrConfig: KrrConfig = KrrConfig(),
+    val behandlerConfig: BehandlerConfig = BehandlerConfig()
+)
 
 
 data class PdlConfig(
@@ -33,4 +33,3 @@ data class BehandlerConfig(
     val baseUrl: String = getEnvVar("BEHANDLER_BASE_URL"),
     val scope: String = getEnvVar("BEHANDLER_SCOPE")
 )
-

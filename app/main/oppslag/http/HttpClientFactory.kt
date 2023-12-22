@@ -3,13 +3,13 @@ package oppslag.http
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import oppslag.SECURE_LOGGER
 import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.jackson.*
+import oppslag.SECURE_LOGGER
 
 internal object HttpClientFactory {
     fun create(): HttpClient = HttpClient(CIO) {

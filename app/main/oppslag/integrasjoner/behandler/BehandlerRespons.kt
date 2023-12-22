@@ -15,7 +15,6 @@ data class BehandlerRespons(
     val poststed: String?,
     val telefon: String?
 ) {
-
     fun tilBehandler() = RegistrertBehandler(
         Navn(fornavn, mellomnavn, etternavn),
         RegistrertBehandler.KontaktInformasjon(
@@ -24,25 +23,7 @@ data class BehandlerRespons(
             telefon
         )
     )
-
 }
-
-data class RegistrertBehandler(
-    val navn: Navn,
-    val kontaktinformasjon: KontaktInformasjon
-) {
-    data class KontaktInformasjon(
-        val kontor: String?,
-        val adresse: Adresse?,
-        var telefon: String?
-    )
-}
-
-data class Navn(
-    val fornavn: String,
-    val mellomnavn: String?,
-    val etternavn: String
-)
 
 data class Adresse(
     val adressenavn: String?,

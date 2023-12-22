@@ -20,7 +20,7 @@ internal fun ApplicationCall.personident(): String {
         ?: error("pid mangler i tokenx claims")
 }
 
-internal fun ApplicationCall.authToken():String {
+internal fun ApplicationCall.authToken(): String {
     return requireNotNull(this.request.headers["Authorization"]) {
         "Authorization header mangler"
     }.split(" ")[1]

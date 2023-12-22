@@ -1,7 +1,6 @@
 package oppslag.integrasjoner.pdl
 
-import PdlRequest
-import PdlRequest.Companion.hentBarnInfo
+import oppslag.integrasjoner.pdl.PdlRequest.Companion.hentBarnInfo
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -14,14 +13,14 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.scope)
     private val httpClient = HttpClientFactory.create()
 
-    suspend fun hentPerson(personident: String, tokenXToken:String, callId: String):Søker? {
-        val res = query(tokenXToken,PdlRequest.hentPerson(personident),callId)
+    suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Søker? {
+        val res = query(tokenXToken, PdlRequest.hentPerson(personident), callId)
         val person = res.data?.hentPdlPerson
         return person?.toSøker()
     }
 
-    suspend fun hentBarn(personident: String, tokenXToken:String, callId: String):List<Barn>{
-        val barnRelasjon:List<String> = hentBarnRelasjon(personident,tokenXToken, callId)
+    suspend fun hentBarn(personident: String, tokenXToken: String, callId: String): List<Barn> {
+        val barnRelasjon: List<String> = hentBarnRelasjon(personident, tokenXToken, callId)
             ?.mapNotNull { it.relatertPersonsIdent }
             ?.toList()
             ?: emptyList()
@@ -32,10 +31,10 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
             .map { it.toBarn() }
     }
 
-    private suspend fun hentBarnRelasjon(personident: String, tokenXToken:String, callId: String) =
+    private suspend fun hentBarnRelasjon(personident: String, tokenXToken: String, callId: String) =
         query(tokenXToken, PdlRequest.hentBarnRelasjon(personident), callId).data?.hentPdlPerson?.foreldreBarnRelasjon
 
-    private suspend fun hentBarn(tokenXToken:String, list: List<String>, callId: String):List<PdlPerson>{
+    private suspend fun hentBarn(tokenXToken: String, list: List<String>, callId: String): List<PdlPerson> {
         return list.map { fnr ->
             val barnInfo = query(tokenXToken, hentBarnInfo(fnr), callId).data?.hentPdlPerson
             PdlPerson(
@@ -50,7 +49,7 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
         }.toList()
     }
 
-    private suspend fun query(tokenXToken:String,query: PdlRequest, callId:String): PdlResponse {
+    private suspend fun query(tokenXToken: String, query: PdlRequest, callId: String): PdlResponse {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
         val request = httpClient.post(pdlConfig.baseUrl) {
             accept(ContentType.Application.Json)
@@ -66,6 +65,4 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
         }
         return request.body()
     }
-
-
 }

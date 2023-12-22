@@ -1,6 +1,5 @@
 package oppslag.integrasjoner.behandler
 
-import oppslag.http.HttpClientFactory
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -10,9 +9,8 @@ import kotlinx.coroutines.runBlocking
 import no.nav.aap.ktor.client.TokenXProviderConfig
 import no.nav.aap.ktor.client.TokenXTokenProvider
 import oppslag.BehandlerConfig
+import oppslag.http.HttpClientFactory
 
-
-// Fastlege
 private const val BEHANDLER_CLIENT_SECONDS_METRICNAME = "behandler_client_seconds"
 private val clientLatencyStats: Summary = Summary.build()
     .name(BEHANDLER_CLIENT_SECONDS_METRICNAME)
@@ -27,7 +25,7 @@ class BehandlerClient(tokenXProviderConfig: TokenXProviderConfig, private val be
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, behandlerConfig.scope, httpClient)
 
     fun hentBehandler(
-        tokenXToken:String,
+        tokenXToken: String,
         callId: String
     ): BehandlerRespons =
         clientLatencyStats.startTimer().use {

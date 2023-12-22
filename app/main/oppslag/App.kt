@@ -2,8 +2,6 @@ package oppslag
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import oppslag.auth.TOKENX
-import oppslag.auth.authentication
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
@@ -19,18 +17,21 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
+import oppslag.auth.TOKENX
+import oppslag.auth.authentication
 import oppslag.integrasjoner.behandler.BehandlerClient
-import oppslag.integrasjoner.krr.KontaktinformasjonClient
+import oppslag.integrasjoner.krr.KrrClient
 import oppslag.integrasjoner.pdl.PdlException
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
-import oppslag.routes.*
+import oppslag.routes.actuator
+import oppslag.routes.behandlerRoute
+import oppslag.routes.krrRoute
+import oppslag.routes.pdlRoute
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 
-
 val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
-
 
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
@@ -41,9 +42,9 @@ fun Application.api(
     config: Config = Config(),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-    val pdl = PdlGraphQLClient(config.tokenx, config.PdlConfig)
-    val krr = KontaktinformasjonClient(config.tokenx, config.KrrConfig)
-    val behandler = BehandlerClient(config.tokenx, config.BehandlerConfig)
+    val pdl = PdlGraphQLClient(config.tokenx, config.pdlConfig)
+    val krr = KrrClient(config.tokenx, config.krrConfig)
+    val behandler = BehandlerClient(config.tokenx, config.behandlerConfig)
 
     install(MicrometerMetrics) { registry = prometheus }
 
@@ -65,7 +66,7 @@ fun Application.api(
     }
 
     install(StatusPages) {
-        exception<PdlException>{ call, cause ->
+        exception<PdlException> { call, cause ->
             SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
             call.respondText(text = "Feil i PDL: ${cause.message}", status = HttpStatusCode.InternalServerError)
         }
@@ -90,5 +91,4 @@ fun Application.api(
         }
         actuator(prometheus)
     }
-
 }

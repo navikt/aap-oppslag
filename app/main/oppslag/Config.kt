@@ -8,7 +8,7 @@ private fun getEnvVar(envar: String) = System.getenv(envar) ?: error("missing en
 data class Config(
     val tokenx: TokenXProviderConfig = TokenXProviderConfig(
         clientId = getEnvVar("TOKEN_X_CLIENT_ID"),
-        privateKey = getEnvVar("TOKEN_X_PRIVATE_KEY"),
+        privateKey = getEnvVar("TOKEN_X_PRIVATE_JWK"),
         tokenEndpoint = getEnvVar("TOKEN_X_TOKEN_ENDPOINT"),
         jwksUrl = URI(getEnvVar("TOKEN_X_WELL_KNOWN_URL")).toURL(),
         issuer = getEnvVar("TOKEN_X_ISSUER"),

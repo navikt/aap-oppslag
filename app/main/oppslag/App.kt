@@ -31,6 +31,7 @@ import org.slf4j.event.Level
 
 val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
 
+
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
     embeddedServer(Netty, port = 8080, module = Application::api).start(wait = true)

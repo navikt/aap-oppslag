@@ -25,8 +25,8 @@ class BehandlerClient(tokenXProviderConfig: TokenXProviderConfig, private val be
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, behandlerConfig.scope, httpClient)
 
     fun hentBehandler(
-        tokenXToken: String,
-        callId: String
+        tokenXToken:String,
+        callId: String?
     ): BehandlerRespons =
         clientLatencyStats.startTimer().use {
             runBlocking {

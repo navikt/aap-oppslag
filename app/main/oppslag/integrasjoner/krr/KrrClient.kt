@@ -26,7 +26,7 @@ class KrrClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfi
 
     fun hentKontaktinformasjon(
         tokenXToken: String,
-        callId: String
+        callId: String?
     ): KrrRespons =
         clientLatencyStats.startTimer().use {
             runBlocking {

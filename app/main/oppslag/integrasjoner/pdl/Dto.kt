@@ -14,6 +14,5 @@ data class Søker(
 
 data class Barn(
     val navn: String?,
-    val fødselsdato: LocalDate?,
-    val fnr: String?,
+    val fødselsdato: LocalDate?
 )

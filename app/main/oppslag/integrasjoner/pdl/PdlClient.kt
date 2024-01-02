@@ -25,10 +25,10 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
             ?.toList()
             ?: emptyList()
         return hentBarn(tokenXToken, barnRelasjon, callId)
-            .filter { it.myndig() }
+            .filter { it.myndig().not() }
             .filter { it.beskyttet().not() }
             .filter { it.død().not() }
-            .map { it.toBarn() }
+            .map { it.toBarn() } //TODO: skriv om til mindre funksjoner
     }
 
     private suspend fun hentBarnRelasjon(personident: String, tokenXToken: String, callId: String) =

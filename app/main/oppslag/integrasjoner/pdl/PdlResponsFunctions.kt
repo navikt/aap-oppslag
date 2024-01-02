@@ -20,7 +20,6 @@ internal fun PdlPerson.toBarn(): Barn {
     val fødselsdato = foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it) }
     return Barn(
         navn = this.fulltNavn() ?: "",
-        fnr = fnr ?: "",
         fødselsdato = fødselsdato
     )
 }

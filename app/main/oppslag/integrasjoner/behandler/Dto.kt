@@ -1,7 +1,7 @@
 package oppslag.integrasjoner.behandler
 
 data class RegistrertBehandler(
-    val navn: Navn,
+    val navn: String,
     val kontaktinformasjon: KontaktInformasjon
 ) {
     data class KontaktInformasjon(
@@ -11,8 +11,3 @@ data class RegistrertBehandler(
     )
 }
 
-data class Navn(
-    val fornavn: String,
-    val mellomnavn: String?,
-    val etternavn: String
-)

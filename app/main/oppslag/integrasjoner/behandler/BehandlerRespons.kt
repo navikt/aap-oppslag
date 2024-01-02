@@ -16,7 +16,7 @@ data class BehandlerRespons(
     val telefon: String?
 ) {
     fun tilBehandler() = RegistrertBehandler(
-        Navn(fornavn, mellomnavn, etternavn),
+        "${this.fornavn} ${this.mellomnavn ?: ""} ${this.etternavn}",
         RegistrertBehandler.KontaktInformasjon(
             kontor,
             adresse,

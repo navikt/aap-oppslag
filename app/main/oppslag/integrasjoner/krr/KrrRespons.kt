@@ -1,16 +1,14 @@
 package oppslag.integrasjoner.krr
 
-import com.fasterxml.jackson.annotation.JsonAlias
-
 data class KrrRespons(
     val kanVarsles: Boolean? = false,
     val aktiv: Boolean? = false,
-    @JsonAlias("epostadresse") val epost: String? = null,
-    @JsonAlias("mobiltelefonnummer") val mobil: String? = null
+    val epostadresse: String? = null,
+    val mobiltelefonnummer: String? = null
 ) {
     fun tilKontaktinfo() =
         if (aktiv == true && kanVarsles == true) {
-            Kontaktinformasjon(epost, mobil)
+            Kontaktinformasjon(epostadresse, mobiltelefonnummer)
         } else {
             Kontaktinformasjon()
         }

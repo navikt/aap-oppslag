@@ -52,3 +52,7 @@ spec:
       value: http://isdialogmelding.teamsykefravr
     - name: BEHANDLER_SCOPE
       value: dev-gcp:teamsykefravr:isdialogmelding
+  accessPolicy:
+    inbound:
+      rules:
+        - application: soknad

@@ -58,5 +58,5 @@ spec:
         - application: soknad
     outbound:
       external:
-        - host: pdl-api.${env}-fss-pub.nais.io
+        - host: pdl-api.dev-fss-pub.nais.io
 

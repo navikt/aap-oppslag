@@ -12,7 +12,8 @@ fun Route.krrRoute(krr: KrrClient) {
     route("/krr") {
         get {
             val personIdent = requireNotNull(call.personident())
-            call.respond(HttpStatusCode.OK, krr.hentKontaktinformasjon(call.authToken(), personIdent).tilKontaktinfo())
+
+            call.respond(HttpStatusCode.OK, {})
         }
     }
 }

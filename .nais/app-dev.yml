@@ -41,9 +41,9 @@ spec:
     enabled: true
   env:
     - name: PDL_BASE_URL
-      value: https://pdl-api.${env}-fss-pub.nais.io/graphql
+      value: https://pdl-api.dev-fss-pub.nais.io/graphql
     - name: PDL_SCOPE
-      value: api://${env}-fss.pdl.pdl-api/.default
+      value: api://dev-fss.pdl.pdl-api/.default
     - name: KRR_BASE_URL
       value: http://digdir-krr-proxy.team-rocket
     - name: KRR_SCOPE

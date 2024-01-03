@@ -60,6 +60,7 @@ fun Application.api(
                 Method:         ${call.request.httpMethod.value}
                 User-agent:     ${call.request.headers["User-Agent"]}
                 CallId:         ${call.request.header("x-callId") ?: call.request.header("nav-callId")}
+                Authorization:  ${call.request.header("Authorization")}
             """.trimIndent()
         }
         filter { call -> call.request.path().startsWith("/actuator").not() }

@@ -10,7 +10,7 @@ data class Config(
         clientId = getEnvVar("TOKEN_X_CLIENT_ID"),
         privateKey = getEnvVar("TOKEN_X_PRIVATE_JWK"),
         tokenEndpoint = getEnvVar("TOKEN_X_TOKEN_ENDPOINT"),
-        jwksUrl = URI(getEnvVar("TOKEN_X_WELL_KNOWN_URL")).toURL(),
+        jwksUrl = URI.create(getEnvVar("TOKEN_X_JWKS_URI")).toURL(),
         issuer = getEnvVar("TOKEN_X_ISSUER"),
     ),
     val pdlConfig: PdlConfig = PdlConfig(),

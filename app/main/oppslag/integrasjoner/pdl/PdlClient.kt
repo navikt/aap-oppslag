@@ -15,7 +15,7 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Søker? {
         val res = query(tokenXToken, PdlRequest.hentPerson(personident), callId)
-        val person = res.data?.hentPdlPerson
+        val person = res.data?.hentPerson
         return person?.toSøker()
     }
 
@@ -29,11 +29,11 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
     }
 
     private suspend fun hentBarnRelasjon(personident: String, tokenXToken: String, callId: String) =
-        query(tokenXToken, PdlRequest.hentBarnRelasjon(personident), callId).data?.hentPdlPerson?.foreldreBarnRelasjon
+        query(tokenXToken, PdlRequest.hentBarnRelasjon(personident), callId).data?.hentPerson?.foreldreBarnRelasjon
 
     private suspend fun hentBarn(tokenXToken: String, list: List<String>, callId: String): List<PdlPerson> {
         return list.map { fnr ->
-            val barnInfo = query(tokenXToken, hentBarnInfo(fnr), callId).data?.hentPdlPerson
+            val barnInfo = query(tokenXToken, hentBarnInfo(fnr), callId).data?.hentPerson
             PdlPerson(
                 adressebeskyttelse = barnInfo?.adressebeskyttelse,
                 navn = barnInfo?.navn,
@@ -60,7 +60,7 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
         if (respons.errors != null) {
             throw PdlException("Feil mot PDL: ${respons.errors}")
         }
-        return request.body()
+        return respons
     }
 }
 

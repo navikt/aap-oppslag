@@ -21,7 +21,7 @@ data class Config(
 
 data class PdlConfig(
     val baseUrl: String = getEnvVar("PDL_BASE_URL"),
-    val scope: String = getEnvVar("PDL_SCOPE")
+    val audience: String = getEnvVar("PDL_AUDIENCE")
 )
 
 data class KrrConfig(

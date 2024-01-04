@@ -10,7 +10,7 @@ import oppslag.PdlConfig
 import oppslag.http.HttpClientFactory
 
 class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val pdlConfig: PdlConfig) {
-    private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.scope)
+    private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
     private val httpClient = HttpClientFactory.create()
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Søker? {

@@ -24,11 +24,8 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
             ?.mapNotNull { it.relatertPersonsIdent }
             ?.toList()
             ?: emptyList()
-        return hentBarn(tokenXToken, barnRelasjon, callId)
-            .filter { it.myndig().not() }
-            .filter { it.beskyttet().not() }
-            .filter { it.død().not() }
-            .map { it.toBarn() } //TODO: skriv om til mindre funksjoner
+        return mapToBarn(filter(hentBarn(tokenXToken, barnRelasjon, callId)))
+
     }
 
     private suspend fun hentBarnRelasjon(personident: String, tokenXToken: String, callId: String) =
@@ -65,4 +62,15 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
         }
         return request.body()
     }
+}
+
+private fun filter(barn:List<PdlPerson>): List<PdlPerson>{
+    return barn
+        .filter { it.myndig().not() }
+        .filter { it.beskyttet().not() }
+        .filter { it.død().not() }
+}
+
+private fun mapToBarn(barn: List<PdlPerson>): List<Barn> {
+    return barn.map { it.toBarn() }
 }

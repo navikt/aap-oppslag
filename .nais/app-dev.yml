@@ -59,4 +59,8 @@ spec:
     outbound:
       external:
         - host: pdl-api.dev-fss-pub.nais.io
+      rules:
+        - application: pdl-api
+          namespace: pdl
+          cluster: dev-fss
 

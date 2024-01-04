@@ -26,7 +26,7 @@ internal object TestConfig {
             ),
             pdlConfig = PdlConfig(
                 baseUrl = "http://localhost:${fakes.krr.port()}", //TODO: ENDRE DENNE
-                audience = "api://dev-fss.teamdokumenthandtering.pdl/.default"
+                audience = "dev-fss:pdl:pdl-api"
             ),
             krrConfig = KrrConfig(
                 baseUrl = "http://localhost:${fakes.krr.port()}",

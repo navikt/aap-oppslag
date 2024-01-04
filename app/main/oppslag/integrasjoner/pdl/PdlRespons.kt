@@ -6,10 +6,14 @@ import java.time.LocalDate
 internal data class PdlResponse(
     val data: PdlData?,
     val errors: List<PdlError>?,
+    val extensions: PdlExtensions?
 )
 
+internal data class PdlExtensions(
+    val warnings: List<PdlWarning>?
+)
 internal data class PdlData(
-    val hentPdlPerson: PdlPerson?,
+    val hentPerson: PdlPerson?,
 )
 
 internal data class PdlPerson(
@@ -60,6 +64,14 @@ internal data class PdlError(
     val locations: List<PdlErrorLocation>,
     val path: List<String>?,
     val extensions: PdlErrorExtension
+)
+
+internal class PdlWarning(
+    val query:String?,
+    val id:String?,
+    val code: String?,
+    val message: String?,
+    val details: String?,
 )
 
 internal data class PdlErrorExtension(

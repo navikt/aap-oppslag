@@ -62,5 +62,7 @@ spec:
       rules:
         - application: digdir-krr-proxy
           namespace: team-rocket
+          cluster: dev-gcp
         - application: isdialogmelding
           namespace: teamsykefravr
+          cluster: dev-gcp

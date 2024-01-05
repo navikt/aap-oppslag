@@ -59,4 +59,8 @@ spec:
     outbound:
       external:
         - host: pdl-api.dev-fss-pub.nais.io
-
+      rules:
+        - application: digdir-krr-proxy
+          namespace: team-rocket
+        - application: isdialogmelding
+          namespace: teamsykefravr

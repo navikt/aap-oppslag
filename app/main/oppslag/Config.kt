@@ -15,7 +15,8 @@ data class Config(
     ),
     val pdlConfig: PdlConfig = PdlConfig(),
     val krrConfig: KrrConfig = KrrConfig(),
-    val behandlerConfig: BehandlerConfig = BehandlerConfig()
+    val behandlerConfig: BehandlerConfig = BehandlerConfig(),
+    val safConfig: SafConfig = SafConfig()
 )
 
 
@@ -32,4 +33,9 @@ data class KrrConfig(
 data class BehandlerConfig(
     val baseUrl: String = getEnvVar("BEHANDLER_BASE_URL"),
     val scope: String = getEnvVar("BEHANDLER_SCOPE")
+)
+
+data class SafConfig(
+    val baseUrl: String = getEnvVar("SAF_BASE_URL"),
+    val scope: String = getEnvVar("SAF_SCOPE")
 )

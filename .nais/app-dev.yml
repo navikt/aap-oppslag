@@ -52,13 +52,19 @@ spec:
       value: http://isdialogmelding.teamsykefravr
     - name: BEHANDLER_SCOPE
       value: dev-gcp:teamsykefravr:isdialogmelding
+    - name: SAF_BASE_URL
+      value: https://safselvbetjening.dev-fss-pub.nais.io
+    - name: SAF_SCOPE
+      value: dev-fss:teamdokumenthandtering:safselvbetjening
   accessPolicy:
     inbound:
       rules:
         - application: soknad
+        - application: innsyn
     outbound:
       external:
         - host: pdl-api.dev-fss-pub.nais.io
+        - host: safselvbetjening.dev-fss-pub.nais.io
       rules:
         - application: digdir-krr-proxy
           namespace: team-rocket

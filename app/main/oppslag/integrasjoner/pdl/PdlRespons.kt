@@ -1,17 +1,16 @@
 package oppslag.integrasjoner.pdl
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import oppslag.graphql.GraphQLError
+import oppslag.graphql.GraphQLExtensions
 import java.time.LocalDate
 
 internal data class PdlResponse(
     val data: PdlData?,
-    val errors: List<PdlError>?,
-    val extensions: PdlExtensions?
+    val errors: List<GraphQLError>?,
+    val extensions: GraphQLExtensions?
 )
 
-internal data class PdlExtensions(
-    val warnings: List<PdlWarning>?
-)
 internal data class PdlData(
     val hentPerson: PdlPerson?,
 )
@@ -57,29 +56,4 @@ internal data class PdlNavn(
     val fornavn: String,
     val etternavn: String,
     val mellomnavn: String?
-)
-
-internal data class PdlError(
-    val message: String,
-    val locations: List<PdlErrorLocation>,
-    val path: List<String>?,
-    val extensions: PdlErrorExtension
-)
-
-internal class PdlWarning(
-    val query:String?,
-    val id:String?,
-    val code: String?,
-    val message: String?,
-    val details: String?,
-)
-
-internal data class PdlErrorExtension(
-    val code: String?,
-    val classification: String
-)
-
-internal data class PdlErrorLocation(
-    val line: Int?,
-    val column: Int?
 )

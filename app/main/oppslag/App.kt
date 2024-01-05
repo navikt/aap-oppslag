@@ -23,10 +23,8 @@ import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.krr.KrrClient
 import oppslag.integrasjoner.pdl.PdlException
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
-import oppslag.routes.actuator
-import oppslag.routes.behandlerRoute
-import oppslag.routes.krrRoute
-import oppslag.routes.pdlRoute
+import oppslag.integrasjoner.saf.SafClient
+import oppslag.routes.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
@@ -45,6 +43,7 @@ fun Application.api(
     val pdl = PdlGraphQLClient(config.tokenx, config.pdlConfig)
     val krr = KrrClient(config.tokenx, config.krrConfig)
     val behandler = BehandlerClient(config.tokenx, config.behandlerConfig)
+    val saf = SafClient(config.tokenx, config.safConfig)
 
     install(MicrometerMetrics) { registry = prometheus }
 
@@ -89,6 +88,7 @@ fun Application.api(
             pdlRoute(pdl)
             behandlerRoute(behandler)
             krrRoute(krr)
+            safRoute(saf)
         }
         actuator(prometheus)
     }

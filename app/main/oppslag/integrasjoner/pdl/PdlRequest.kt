@@ -1,21 +1,23 @@
 package oppslag.integrasjoner.pdl
 
+import oppslag.graphql.asQuery
+
 internal data class PdlRequest(val query: String, val variables: Variables) {
     data class Variables(val ident: String)
 
     companion object {
         fun hentPerson(personident: String) = PdlRequest(
-            query = person.replace("\n", ""),
+            query = person.asQuery(),
             variables = Variables(personident),
         )
 
         fun hentBarnRelasjon(personident: String) = PdlRequest(
-            query = barnRelasjon.replace("\n", ""),
+            query = barnRelasjon.asQuery(),
             variables = Variables(personident),
         )
 
         fun hentBarnInfo(personident: String) = PdlRequest(
-            query = barn.replace("\n", ""),
+            query = barn.asQuery(),
             variables = Variables(personident),
         )
     }

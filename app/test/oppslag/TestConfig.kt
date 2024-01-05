@@ -36,6 +36,10 @@ internal object TestConfig {
                 baseUrl = "http://localhost:${fakes.behandler.port()}",
                 scope = "api://dev-fss.teamdokumenthandtering.behandler/.default"
             ),
+            safConfig = SafConfig(
+                baseUrl = "http://localhost:${fakes.saf.port()}",
+                scope = "api://dev-fss.teamdokumenthandtering.safselvbetjening/.default"
+            )
         )
     }
 

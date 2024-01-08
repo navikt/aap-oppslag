@@ -13,12 +13,15 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
     private val httpClient = HttpClientFactory.create()
 
     suspend fun hentDokumenter(personident: String, tokenXToken: String, callId: String): List<Dokument> {
-        val res = query(tokenXToken, SafRequest.hentDokumenter(personident), callId)
+        val res = graphqlQuery(tokenXToken, SafRequest.hentDokumenter(personident), callId)
         val journalposter = res.data?.dokumentoversiktSelvbetjening
         return journalposter?.toDokumenter() ?: emptyList()
     }
 
-    private suspend fun query(tokenXToken: String, query: SafRequest, callId: String): SafRespons {
+    suspend fun hentDokument(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String) =
+        restQuery(tokenXToken, journalpostId, dokumentId, callId)
+
+    private suspend fun graphqlQuery(tokenXToken: String, query: SafRequest, callId: String): SafRespons {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
         val request = httpClient.post(safConfig.baseUrl) {
             accept(ContentType.Application.Json)
@@ -33,4 +36,11 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         }
         return respons
     }
+
+    private suspend fun restQuery(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String) =
+        httpClient.get("${safConfig.baseUrl}/rest/hentdokument/$journalpostId/$dokumentId/ARKIV") {
+            header("Nav-Call-Id", callId)
+            bearerAuth(tokenProvider.getOnBehalfOfToken(tokenXToken))
+            contentType(ContentType.Application.Json)
+        }.body<ByteArray>()
 }

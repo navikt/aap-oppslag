@@ -1,7 +1,7 @@
 package oppslag.integrasjoner.saf
 
 internal fun SafDokumentoversikt.toDokumenter(): List<Dokument> {
-    return this.journalposter.filterNotNull().flatMap {
+    return journalposter.filterNotNull().flatMap {
         it.toDokumenter()
     }
 }
@@ -23,7 +23,7 @@ internal fun SafJournalpost.toDokumenter(): List<Dokument> {
 }
 
 internal fun SafDokumentInfo.kanVises() =
-    this.dokumentvarianter.filterNotNull().any { it.kanVises() }
+    dokumentvarianter.filterNotNull().any { it.kanVises() }
 
 internal fun SafDokumentvariant.kanVises() =
     filtype == "PDF" && brukerHarTilgang && variantformat == SafVariantformat.ARKIV

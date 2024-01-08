@@ -8,12 +8,14 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import oppslag.auth.authToken
 import oppslag.integrasjoner.behandler.BehandlerClient
+import java.util.UUID
 
 fun Route.behandlerRoute(behandler: BehandlerClient) {
     route("/behandler") {
         get {
-            val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
-            call.respond(HttpStatusCode.OK, behandler.hentBehandler(call.authToken(), callId).tilBehandler())
+            val callId = call.request.header("Nav-CallId")?:UUID.randomUUID().toString()
+            val behandlersvar = behandler.hentBehandler(call.authToken(), callId).tilBehandler()
+            call.respond(HttpStatusCode.OK, behandlersvar)
         }
     }
 }

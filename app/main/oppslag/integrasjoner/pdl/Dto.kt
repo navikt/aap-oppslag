@@ -14,5 +14,10 @@ data class Søker(
 
 data class Barn(
     val navn: String?,
-    val fødselsdato: LocalDate?
+    val fødselsdato: LocalDate?,
+    val pdlStatus: PdlStatus
 )
+
+enum class PdlStatus {
+    OK, NOT_FOUND, BAD_REQUEST
+}

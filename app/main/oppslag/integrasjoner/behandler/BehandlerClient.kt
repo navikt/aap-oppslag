@@ -31,7 +31,7 @@ class BehandlerClient(tokenXProviderConfig: TokenXProviderConfig, private val be
         clientLatencyStats.startTimer().use {
             runBlocking {
                 val obotoken = tokenProvider.getOnBehalfOfToken(tokenXToken)
-                val response = httpClient.get("${behandlerConfig.baseUrl}api/person/v1/behandler/self") {
+                val response = httpClient.get("${behandlerConfig.baseUrl}/api/person/v1/behandler/self") {
                     accept(ContentType.Application.Json)
                     header("Nav-Callid", callId) //TODO: sjekk om dette er riktig
                     bearerAuth(obotoken)

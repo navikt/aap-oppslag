@@ -20,9 +20,12 @@ internal fun PdlPerson.toBarn(): Barn {
     val fødselsdato = foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it) }
     return Barn(
         navn = this.fulltNavn() ?: "",
-        fødselsdato = fødselsdato
+        fødselsdato = fødselsdato,
+        pdlStatus = requireNotNull(this.code).toPdlStatus()
     )
 }
+
+internal fun Code.toPdlStatus(): PdlStatus = PdlStatus.valueOf(this.name.uppercase())
 
 internal fun PdlPerson.fulltNavn(): String? =
     navn?.firstOrNull()?.let { "${it.fornavn} ${it.mellomnavn ?: ""} ${it.etternavn}" }

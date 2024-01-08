@@ -3,28 +3,29 @@ package oppslag.integrasjoner.pdl
 import oppslag.graphql.asQuery
 
 internal data class PdlRequest(val query: String, val variables: Variables) {
-    data class Variables(val ident: String)
+    data class Variables(val ident: String?=null, val identer: List<String>? = null)
 
     companion object {
         fun hentPerson(personident: String) = PdlRequest(
             query = person.asQuery(),
-            variables = Variables(personident),
+            variables = Variables(ident = personident),
         )
 
         fun hentBarnRelasjon(personident: String) = PdlRequest(
             query = barnRelasjon.asQuery(),
-            variables = Variables(personident),
+            variables = Variables(ident = personident),
         )
 
-        fun hentBarnInfo(personident: String) = PdlRequest(
-            query = barn.asQuery(),
-            variables = Variables(personident),
+        fun hentBarnInfo(personident: List<String>) = PdlRequest(
+            query = barnBolk.asQuery(),
+            variables = Variables(identer = personident),
         )
     }
 }
 
 
 private const val ident = "\$ident"
+private const val identer = "\$identer"
 
 private val barnRelasjon = """
     query($ident: ID!) {
@@ -62,9 +63,9 @@ private val person = """
     }
 """.trimIndent()
 
-private val barn = """
-    query($ident: ID!) {
-        hentPerson(ident: $ident) {
+private val barnBolk = """
+    query($identer: [ID!]!) {
+        hentPersonBolk(identer: $identer) {
             adressebeskyttelse {
                 gradering
             },

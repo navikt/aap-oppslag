@@ -4,13 +4,15 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
-import org.junit.jupiter.api.Test
 import io.ktor.server.testing.*
-import oppslag.*
+import oppslag.Fakes
 import oppslag.TestConfig
-import org.junit.jupiter.api.Assertions.assertEquals
+import oppslag.TokenXGen
+import oppslag.api
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Test
 
-class KrrTest {
+class BehandlerTest {
     @Test
     fun `Dummy test`() {
         Fakes().use { fakes ->
@@ -23,12 +25,12 @@ class KrrTest {
                     } }
 
                 val tokenXGen = TokenXGen(config.tokenx)
-                val res = client.get("/krr") {
+                val res = client.get("/behandler") {
                     bearerAuth(tokenXGen.generate("12345678910"))
                     accept(ContentType.Application.Json)
                 }
 
-                assertEquals(HttpStatusCode.OK, res.status)
+                Assertions.assertEquals(HttpStatusCode.OK, res.status)
             }
         }
     }

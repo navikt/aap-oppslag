@@ -37,7 +37,7 @@ class KrrClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfi
                     bearerAuth(obotoken)
                 }
                 if (response.status.isSuccess() || response.status.value == 409) {
-                    KrrRespons(response.body())
+                    response.body()
                 } else {
                     error("Feil mot krr (${response.status}): ${response.bodyAsText()}")
                 }

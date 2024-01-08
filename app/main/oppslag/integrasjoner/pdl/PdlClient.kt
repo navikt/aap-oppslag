@@ -13,40 +13,65 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
     private val httpClient = HttpClientFactory.create()
 
-    suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Søker? {
+    suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
         val res = query(tokenXToken, PdlRequest.hentPerson(personident), callId)
-        val person = res.data?.hentPerson
-        return person?.toSøker()
+        return res.map { it.data?.hentPerson?.toSøker() }
     }
 
-    suspend fun hentBarn(personident: String, tokenXToken: String, callId: String): List<Barn> {
-        val barnRelasjon: List<String> = hentBarnRelasjon(personident, tokenXToken, callId)
-            ?.mapNotNull { it.relatertPersonsIdent }
-            ?.toList()
-            ?: emptyList()
-        return mapToBarn(filter(hentBarn(tokenXToken, barnRelasjon, callId)))
-
-    }
-
-    private suspend fun hentBarnRelasjon(personident: String, tokenXToken: String, callId: String) =
-        query(tokenXToken, PdlRequest.hentBarnRelasjon(personident), callId).data?.hentPerson?.foreldreBarnRelasjon
-
-    private suspend fun hentBarn(tokenXToken: String, list: List<String>, callId: String): List<PdlPerson> {
-        return list.map { fnr ->
-            val barnInfo = query(tokenXToken, hentBarnInfo(fnr), callId).data?.hentPerson
-            PdlPerson(
-                adressebeskyttelse = barnInfo?.adressebeskyttelse,
-                navn = barnInfo?.navn,
-                foedsel = barnInfo?.foedsel,
-                foreldreBarnRelasjon = null,
-                bostedsadresse = null,
-                fnr = fnr,
-                doedsfall = null
+    suspend fun hentBarn(personident: String, tokenXToken: String, callId: String): Result<List<Barn>> {
+        val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, tokenXToken, callId).map {
+            it?.mapNotNull { it.relatertPersonsIdent }
+                ?.toList()
+                ?: emptyList()
+        }
+        val maybeBarn = runCatching {
+            maybeRelatertPersonIdenter.map { personIdenter ->
+                hentBarnBolk(tokenXToken, personIdenter, callId).map {
+                    it.filter {
+                        it.myndig().not() && it.beskyttet().not() && it.død().not()
+                    }
+                }
+            }.fold(
+                onSuccess = { it.getOrThrow() },
+                onFailure = { throw it }
             )
-        }.toList()
+        }
+        return maybeBarn.map {
+            mapToBarn(it)
+
+        }
     }
 
-    private suspend fun query(tokenXToken: String, query: PdlRequest, callId: String): PdlResponse {
+
+    private suspend fun hentBarnRelasjon(
+        personident: String,
+        tokenXToken: String,
+        callId: String
+    ): Result<List<PdlForelderBarnRelasjon>?> =
+        query(
+            tokenXToken,
+            PdlRequest.hentBarnRelasjon(personident),
+            callId
+        ).map { it.data?.hentPerson?.foreldreBarnRelasjon }
+
+    private suspend fun hentBarnBolk(tokenXToken: String, list: List<String>, callId: String): Result<List<PdlPerson>> {
+        return query(tokenXToken, hentBarnInfo(list), callId).map {
+            it.data?.hentPersoner?.map { barnInfo ->
+                PdlPerson(
+                    adressebeskyttelse = barnInfo.adressebeskyttelse,
+                    navn = barnInfo.navn,
+                    foedsel = barnInfo.foedsel,
+                    foreldreBarnRelasjon = null,
+                    bostedsadresse = null,
+                    fnr = barnInfo.fnr,
+                    doedsfall = null,
+                    code = barnInfo.code
+                )
+            } ?: emptyList()
+        }
+    }
+
+    private suspend fun query(tokenXToken: String, query: PdlRequest, callId: String): Result<PdlResponse> {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
         val request = httpClient.post(pdlConfig.baseUrl) {
             accept(ContentType.Application.Json)
@@ -56,19 +81,20 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
             contentType(ContentType.Application.Json)
             setBody(query)
         }
-        val respons = request.body<PdlResponse>()
-        if (respons.errors != null) {
-            throw PdlException("Feil mot PDL: ${respons.errors}")
+        return runCatching {
+            val respons = request.body<PdlResponse>()
+            if (respons.errors != null) {
+                throw PdlException("Feil mot PDL: ${respons.errors}")
+            }
+            respons
         }
-        return respons
+
     }
 }
 
-private fun filter(barn:List<PdlPerson>): List<PdlPerson>{
+private fun filter(barn: List<PdlPerson>): List<PdlPerson> {
     return barn
-        .filter { it.myndig().not() }
-        .filter { it.beskyttet().not() }
-        .filter { it.død().not() }
+
 }
 
 private fun mapToBarn(barn: List<PdlPerson>): List<Barn> {

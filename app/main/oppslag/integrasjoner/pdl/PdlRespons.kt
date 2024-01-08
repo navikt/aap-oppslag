@@ -13,6 +13,7 @@ internal data class PdlResponse(
 
 internal data class PdlData(
     val hentPerson: PdlPerson?,
+    val hentPersoner: List<PdlPerson>?
 )
 
 internal data class PdlPerson(
@@ -22,12 +23,17 @@ internal data class PdlPerson(
     val foedsel: List<PdlFoedsel>?,
     val foreldreBarnRelasjon: List<PdlForelderBarnRelasjon>? = null,
     val fnr: String? = null,
-    val doedsfall: Set<PDLDødsfall>? = null
+    val doedsfall: Set<PDLDødsfall>? = null,
+    val code: Code?     //Denne er påkrevd ved hentPersonBolk
 )
 
 internal data class PDLDødsfall(
     @JsonProperty("doedsdato") val dødsdato: LocalDate
 )
+
+internal enum class Code {
+    ok, not_found, bad_request //TODO: add more
+}
 
 internal data class PdlForelderBarnRelasjon(
     val relatertPersonsIdent: String?

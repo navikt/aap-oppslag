@@ -14,12 +14,17 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
         get("/person") {
             val personIdent = call.personident()
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
-            val søker = pdl.hentPerson(personIdent, call.authToken(), callId)
-            if (søker != null) {
-                call.respond(HttpStatusCode.OK, søker)
-            } else {
-                call.respond(HttpStatusCode.NotFound, "Fant ikke person")
-            }
+            pdl.hentPerson(personIdent, call.authToken(), callId)
+                .onSuccess {
+                    if (it != null) {
+                        call.respond(HttpStatusCode.OK, it)
+                    } else {
+                        call.respond(HttpStatusCode.NotFound, "Fant ikke person")
+                    }
+                }
+                .onFailure {
+                    call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
+                }
         }
         get("/barn") {
             val personIdent = call.personident()

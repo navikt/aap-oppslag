@@ -18,14 +18,20 @@ class BehandlerTest {
         Fakes().use { fakes ->
             testApplication {
                 val config = TestConfig.default(fakes)
-                application { api(config) }
+                
+                application { 
+                    api(config) 
+                }
+
                 val client = createClient {
                     install(ContentNegotiation){
                         jackson()
-                    } }
+                    } 
+                }
 
                 val tokenXGen = TokenXGen(config.tokenx)
-                val res = client.get("/behandler") {
+                
+                val res = client.get("/fastlege") {
                     bearerAuth(tokenXGen.generate("12345678910"))
                     accept(ContentType.Application.Json)
                 }

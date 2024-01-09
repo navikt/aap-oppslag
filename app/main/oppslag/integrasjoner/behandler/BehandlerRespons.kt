@@ -1,7 +1,7 @@
 package oppslag.integrasjoner.behandler
 
 data class BehandlerRespons(
-    val type: String,
+    val type: String, //  FASTLEGE, SYKMELDER
     val kategori: String,
     val behandlerRef: String,
     val fnr: String?,
@@ -17,6 +17,7 @@ data class BehandlerRespons(
 ) {
     fun tilBehandler() = RegistrertBehandler(
         navn = "${this.fornavn} ${this.mellomnavn ?: ""} ${this.etternavn}",
+        type = RegistrertBehandler.Type.valueOf(this.type),
         behandlerRef = this.behandlerRef,
         kontaktinformasjon = RegistrertBehandler.KontaktInformasjon(
             kontor,

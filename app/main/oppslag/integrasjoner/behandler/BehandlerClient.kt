@@ -44,3 +44,4 @@ class BehandlerClient(tokenXProviderConfig: TokenXProviderConfig, private val be
             }
         }
 }
+

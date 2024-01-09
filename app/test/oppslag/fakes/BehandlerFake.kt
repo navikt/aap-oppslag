@@ -19,7 +19,25 @@ fun Application.BehandlerFake() {
 
     routing {
         get("api/person/v1/behandler/self"){
-            call.respond(BehandlerRespons("type", "aap", "12", fnr=null, "fornavn", "mellomnavn", "etternavn", "orgnummer", "kontor", null, "postnummer", "poststed", "telefon"))
+            call.respond(
+                listOf(
+                    BehandlerRespons(
+                        type = "FASTLEGE", 
+                        kategori = "aap", 
+                        behandlerRef = "12", 
+                        fnr=null, 
+                        fornavn = "fornavn", 
+                        mellomnavn = "mellomnavn", 
+                        etternavn = "etternavn", 
+                        orgnummer = "orgnummer", 
+                        kontor = "kontor", 
+                        adresse = null, 
+                        postnummer = "postnummer", 
+                        poststed = "poststed", 
+                        telefon = "telefon"
+                    )
+                )
+            )
         }
     }
 }

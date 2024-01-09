@@ -27,7 +27,7 @@ class BehandlerClient(tokenXProviderConfig: TokenXProviderConfig, private val be
     fun hentBehandler(
         tokenXToken:String,
         callId: String?
-    ): BehandlerRespons =
+    ): List<BehandlerRespons> =
         clientLatencyStats.startTimer().use {
             runBlocking {
                 val obotoken = tokenProvider.getOnBehalfOfToken(tokenXToken)
@@ -44,3 +44,4 @@ class BehandlerClient(tokenXProviderConfig: TokenXProviderConfig, private val be
             }
         }
 }
+

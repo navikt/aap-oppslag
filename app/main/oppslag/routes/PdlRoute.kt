@@ -10,8 +10,8 @@ import oppslag.auth.personident
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
 
 fun Route.pdlRoute(pdl: PdlGraphQLClient) {
-    route("/pdl") {
-        get("/person") {
+    route("/person") {
+        get {
             val personIdent = call.personident()
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             pdl.hentPerson(personIdent, call.authToken(), callId)

@@ -26,6 +26,7 @@ class KrrClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfi
 
     fun hentKontaktinformasjon(
         tokenXToken: String,
+        personIdent: String,
         callId: String?
     ): KrrRespons =
         clientLatencyStats.startTimer().use {
@@ -33,7 +34,8 @@ class KrrClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfi
                 val obotoken = tokenProvider.getOnBehalfOfToken(tokenXToken)
                 val response = httpClient.get("${krrConfig.baseUrl}/rest/v1/person") {
                     accept(ContentType.Application.Json)
-                    header("Nav-Callid", callId)
+                    header("Nav-Call-Id", callId)
+                    header("Nav-Personident", personIdent)
                     bearerAuth(obotoken)
                 }
                 if (response.status.isSuccess() || response.status.value == 409) {

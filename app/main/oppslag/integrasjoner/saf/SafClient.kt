@@ -24,7 +24,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
 
     private suspend fun graphqlQuery(tokenXToken: String, query: SafRequest, callId: String): SafRespons {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
-        val request = httpClient.post(safConfig.baseUrl) {
+        val request = httpClient.post("${safConfig.baseUrl}/graphql") {
             accept(ContentType.Application.Json)
             header("Nav-Callid", callId)
             bearerAuth(token)

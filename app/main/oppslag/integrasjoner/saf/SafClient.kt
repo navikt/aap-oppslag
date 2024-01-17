@@ -31,7 +31,10 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
             contentType(ContentType.Application.Json)
             setBody(query)
         }
+
         val respons = request.body<SafRespons>()
+        SECURE_LOGGER.info("Status: ${request.status}")
+        SECURE_LOGGER.info("request response: ${request.call.response}")
         SECURE_LOGGER.info("Saf respons: ${respons}")
         if (respons.errors != null) {
             throw SafException("Feil mot SAF: ${respons.errors}")

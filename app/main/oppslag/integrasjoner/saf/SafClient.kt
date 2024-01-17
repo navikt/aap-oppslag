@@ -5,6 +5,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import no.nav.aap.ktor.client.TokenXProviderConfig
 import no.nav.aap.ktor.client.TokenXTokenProvider
+import oppslag.SECURE_LOGGER
 import oppslag.SafConfig
 import oppslag.http.HttpClientFactory
 
@@ -31,6 +32,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
             setBody(query)
         }
         val respons = request.body<SafRespons>()
+        SECURE_LOGGER.info("Saf respons: ${respons}")
         if (respons.errors != null) {
             throw SafException("Feil mot SAF: ${respons.errors}")
         }

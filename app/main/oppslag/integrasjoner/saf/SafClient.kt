@@ -26,7 +26,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
         val request = httpClient.post(safConfig.baseUrl) {
             accept(ContentType.Application.Json)
-            header("Nav-Call-Id", callId)
+            header("Nav-Callid", callId)
             bearerAuth(token)
             contentType(ContentType.Application.Json)
             setBody(query)

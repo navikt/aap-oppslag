@@ -56,17 +56,19 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
 
     private suspend fun hentBarnBolk(tokenXToken: String, list: List<String>, callId: String): Result<List<PdlPerson>> {
         return query(tokenXToken, hentBarnInfo(list), callId).map {
-            it.data?.hentPersoner?.map { barnInfo ->
-                PdlPerson(
-                    adressebeskyttelse = barnInfo.adressebeskyttelse,
-                    navn = barnInfo.navn,
-                    foedsel = barnInfo.foedsel,
-                    foreldreBarnRelasjon = null,
-                    bostedsadresse = null,
-                    fnr = barnInfo.fnr,
-                    doedsfall = null,
-                    code = barnInfo.code
-                )
+            it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
+                barnInfo.person?.let {barn ->
+                    PdlPerson(
+                        adressebeskyttelse = barn.adressebeskyttelse,
+                        navn = barn.navn,
+                        foedsel = barn.foedsel,
+                        foreldreBarnRelasjon = null,
+                        bostedsadresse = null,
+                        fnr = barn.fnr,
+                        doedsfall = null,
+                        code = barn.code
+                    )
+                }
             } ?: emptyList()
         }
     }

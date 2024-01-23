@@ -13,8 +13,14 @@ internal data class PdlResponse(
 
 internal data class PdlData(
     val hentPerson: PdlPerson?,
-    val hentPersoner: List<PdlPerson>?
+    val hentPersonBolk: List<HentPersonBolkResult>?
 )
+
+internal data class HentPersonBolkResult(
+    val ident: String,
+    val person: PdlPerson?,
+    val code: String,
+    )
 
 internal data class PdlPerson(
     val adressebeskyttelse: List<Adressebeskyttelse>?,

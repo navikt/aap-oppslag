@@ -1,0 +1,70 @@
+apiVersion: nais.io/v1alpha1
+kind: Application
+metadata:
+  name: oppslag
+  namespace: aap
+  labels:
+    team: aap
+    sub: oppslag
+spec:
+  image: {{image}}
+  replicas:
+    cpuThresholdPercentage: 90
+    disableAutoScaling: true
+    max: 4
+    min: 2
+  tokenx:
+    enabled: true
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+    requests:
+      cpu: 500m
+      memory: 512Mi
+  liveness:
+    path: /actuator/live
+    initialDelay: 3
+    periodSeconds: 3
+    failureThreshold: 21
+  readiness:
+    path: /actuator/ready
+    initialDelay: 3
+    periodSeconds: 3
+    failureThreshold: 21
+  prometheus:
+    enabled: true
+    path: /actuator/metrics
+  secureLogs:
+    enabled: true
+  env:
+    - name: PDL_BASE_URL
+      value: https://pdl-api.prod-fss-pub.nais.io/graphql
+    - name: PDL_AUDIENCE
+      value: prod-fss:pdl:pdl-api
+    - name: KRR_BASE_URL
+      value: http://digdir-krr-proxy.team-rocket
+    - name: KRR_SCOPE
+      value: prod-gcp:team-rocket:digdir-krr-proxy
+    - name: BEHANDLER_BASE_URL
+      value: http://isdialogmelding.teamsykefravr
+    - name: BEHANDLER_SCOPE
+      value: prod-gcp:teamsykefravr:isdialogmelding
+    - name: SAF_BASE_URL
+      value: https://safselvbetjening.prod-fss-pub.nais.io
+    - name: SAF_SCOPE
+      value: prod-fss:teamdokumenthandtering:safselvbetjening
+  accessPolicy:
+    inbound:
+      rules:
+        - application: soknad
+        - application: innsyn
+    outbound:
+      external:
+        - host: pdl-api.prod-fss-pub.nais.io
+        - host: safselvbetjening.prod-fss-pub.nais.io
+      rules:
+        - application: digdir-krr-proxy
+          namespace: team-rocket
+        - application: isdialogmelding
+          namespace: teamsykefravr

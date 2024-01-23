@@ -8,7 +8,7 @@ data class RegistrertBehandler(
 ) {
     data class KontaktInformasjon(
         val kontor: String?,
-        val adresse: Adresse?,
+        val adresse: String?,
         var telefon: String?
     )
 

@@ -10,7 +10,7 @@ data class BehandlerRespons(
     val etternavn: String,
     val orgnummer: String?,
     val kontor: String?,
-    val adresse: Adresse?,
+    val adresse: String?,
     val postnummer: String?,
     val poststed: String?,
     val telefon: String?
@@ -26,11 +26,3 @@ data class BehandlerRespons(
         )
     )
 }
-
-data class Adresse(
-    val adressenavn: String?,
-    val husbokstav: String?,
-    val husnummer: String?,
-    val postnummer: String?,
-    val poststed: String?
-)

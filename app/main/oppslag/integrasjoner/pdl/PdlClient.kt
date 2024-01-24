@@ -7,6 +7,7 @@ import io.ktor.http.*
 import no.nav.aap.ktor.client.TokenXProviderConfig
 import no.nav.aap.ktor.client.TokenXTokenProvider
 import oppslag.PdlConfig
+import oppslag.SECURE_LOGGER
 import oppslag.http.HttpClientFactory
 
 class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val pdlConfig: PdlConfig) {
@@ -19,11 +20,10 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
     }
 
     suspend fun hentBarn(personident: String, tokenXToken: String, callId: String): Result<List<Barn>> {
-        val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, tokenXToken, callId).map {
-            it?.mapNotNull { it.relatertPersonsIdent }
-                ?.toList()
-                ?: emptyList()
-        }
+        val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, tokenXToken, callId)
+            .map {
+                it?: emptyList<String>()
+            }.also { SECURE_LOGGER.info("fikk resultat ${it} for personident $personident") }
         val maybeBarn = runCatching {
             maybeRelatertPersonIdenter.map { personIdenter ->
                 hentBarnBolk(tokenXToken, personIdenter, callId).map {
@@ -47,15 +47,15 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
         personident: String,
         tokenXToken: String,
         callId: String
-    ): Result<List<PdlForelderBarnRelasjon>?> =
+    ): Result<List<String>?> =
         query(
             tokenXToken,
             PdlRequest.hentBarnRelasjon(personident),
             callId
-        ).map { it.data?.hentPerson?.foreldreBarnRelasjon }
+        ).map { it.data?.hentPerson?.foreldreBarnRelasjon?.mapNotNull { rel -> rel.relatertPersonsIdent} }
 
-    private suspend fun hentBarnBolk(tokenXToken: String, list: List<String>, callId: String): Result<List<PdlPerson>> {
-        return query(tokenXToken, hentBarnInfo(list), callId).map {
+    private suspend fun hentBarnBolk(tokenXToken: String, personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
+        return query(tokenXToken, hentBarnInfo(personIdenter), callId).map {
             it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
                 barnInfo.person?.let {barn ->
                     PdlPerson(

@@ -16,9 +16,9 @@ internal data class PdlRequest(val query: String, val variables: Variables) {
             variables = Variables(ident = personident),
         )
 
-        fun hentBarnInfo(personident: List<String>) = PdlRequest(
+        fun hentBarnInfo(personidenter: List<String>) = PdlRequest(
             query = barnBolk.asQuery(),
-            variables = Variables(identer = personident),
+            variables = Variables(identer = personidenter),
         )
     }
 }

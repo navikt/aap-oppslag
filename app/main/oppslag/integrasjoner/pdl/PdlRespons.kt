@@ -27,7 +27,7 @@ internal data class PdlPerson(
     val navn: List<PdlNavn>?,
     val bostedsadresse: List<PdlBostedsadresse>? = null,
     val foedsel: List<PdlFoedsel>?,
-    val foreldreBarnRelasjon: List<PdlForelderBarnRelasjon>? = null,
+    val forelderBarnRelasjon: List<PdlForelderBarnRelasjon>? = null,
     val fnr: String? = null,
     val doedsfall: Set<PDLDødsfall>? = null,
     val code: Code?     //Denne er påkrevd ved hentPersonBolk

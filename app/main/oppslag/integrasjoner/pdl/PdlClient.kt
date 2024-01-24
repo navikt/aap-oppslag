@@ -52,7 +52,7 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
             tokenXToken,
             PdlRequest.hentBarnRelasjon(personident),
             callId
-        ).map { it.data?.hentPerson?.foreldreBarnRelasjon?.mapNotNull { rel -> rel.relatertPersonsIdent} }
+        ).map { it.data?.hentPerson?.forelderBarnRelasjon?.mapNotNull { rel -> rel.relatertPersonsIdent} }
 
     private suspend fun hentBarnBolk(tokenXToken: String, personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
         return query(tokenXToken, hentBarnInfo(personIdenter), callId).map {
@@ -62,7 +62,7 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
                         adressebeskyttelse = barn.adressebeskyttelse,
                         navn = barn.navn,
                         foedsel = barn.foedsel,
-                        foreldreBarnRelasjon = null,
+                        forelderBarnRelasjon = null,
                         bostedsadresse = null,
                         fnr = barn.fnr,
                         doedsfall = null,

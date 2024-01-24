@@ -12,20 +12,25 @@ import oppslag.PdlConfig
 import oppslag.SECURE_LOGGER
 import oppslag.http.HttpClientFactory
 
-class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, azureConfig: AzureConfig, private val pdlConfig: PdlConfig) {
+class PdlGraphQLClient(
+    tokenXProviderConfig: TokenXProviderConfig,
+    azureConfig: AzureConfig,
+    private val pdlConfig: PdlConfig
+) {
     private val httpClient = HttpClientFactory.create()
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
     private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope, httpClient)
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
-        val res = query(tokenXToken, PdlRequest.hentPerson(personident), callId)
+        val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
+        val res = query(token, PdlRequest.hentPerson(personident), callId)
         return res.map { it.data?.hentPerson?.toSøker() }
     }
 
     suspend fun hentBarn(personident: String, tokenXToken: String, callId: String): Result<List<Barn>> {
         val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, tokenXToken, callId)
             .map {
-                it?: emptyList<String>()
+                it ?: emptyList<String>()
             }.also { SECURE_LOGGER.info("fikk resultat ${it} for personident $personident") }
         val maybeBarn = runCatching {
             maybeRelatertPersonIdenter.map { personIdenter ->
@@ -50,18 +55,20 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, azureConfig: 
         personident: String,
         tokenXToken: String,
         callId: String
-    ): Result<List<String>?> =
-        query(
-            tokenXToken,
+    ): Result<List<String>?> {
+        val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
+        return query(
+            token,
             PdlRequest.hentBarnRelasjon(personident),
             callId
-        ).map { it.data?.hentPerson?.forelderBarnRelasjon?.mapNotNull { rel -> rel.relatertPersonsIdent} }
+        ).map { it.data?.hentPerson?.forelderBarnRelasjon?.mapNotNull { rel -> rel.relatertPersonsIdent } }
+    }
 
     private suspend fun hentBarnBolk(personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
         val azureToken = azureTokenProvider.getClientCredentialToken()
         return query(azureToken, hentBarnInfo(personIdenter), callId).map {
             it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
-                barnInfo.person?.let {barn ->
+                barnInfo.person?.let { barn ->
                     PdlPerson(
                         adressebeskyttelse = barn.adressebeskyttelse,
                         navn = barn.navn,
@@ -77,13 +84,12 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, azureConfig: 
         }
     }
 
-    private suspend fun query(tokenXToken: String, query: PdlRequest, callId: String): Result<PdlResponse> {
-        val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
+    private suspend fun query(accessToken: String, query: PdlRequest, callId: String): Result<PdlResponse> {
         val request = httpClient.post(pdlConfig.baseUrl) {
             accept(ContentType.Application.Json)
             header("Nav-Call-Id", callId)
             header("TEMA", "AAP")
-            bearerAuth(token)
+            bearerAuth(accessToken)
             contentType(ContentType.Application.Json)
             setBody(query)
         }

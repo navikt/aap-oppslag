@@ -17,7 +17,7 @@ data class Config(
     val azureConfig: AzureConfig= AzureConfig(
         clientId = getEnvVar("AZURE_APP_CLIENT_ID"),
         clientSecret = getEnvVar("AZURE_APP_CLIENT_SECRET"),
-        tokenEndpoint = URI.create(getEnvVar("AZURE_APP_TOKEN_ENDPOINT")).toURL(),
+        tokenEndpoint = URI.create(getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT")).toURL(),
     ),
     val pdlConfig: PdlConfig = PdlConfig(),
     val krrConfig: KrrConfig = KrrConfig(),

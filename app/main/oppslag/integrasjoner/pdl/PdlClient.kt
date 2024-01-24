@@ -94,11 +94,6 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
     }
 }
 
-private fun filter(barn: List<PdlPerson>): List<PdlPerson> {
-    return barn
-
-}
-
 private fun mapToBarn(barn: List<PdlPerson>): List<Barn> {
     return barn.map { it.toBarn() }
 }

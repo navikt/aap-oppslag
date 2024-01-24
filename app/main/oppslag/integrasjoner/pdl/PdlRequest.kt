@@ -3,7 +3,7 @@ package oppslag.integrasjoner.pdl
 import oppslag.graphql.asQuery
 
 internal data class PdlRequest(val query: String, val variables: Variables) {
-    data class Variables(val ident: String?=null, val identer: List<String>? = null)
+    data class Variables(val ident: String? = null, val identer: List<String>? = null)
 
     companion object {
         fun hentPerson(personident: String) = PdlRequest(
@@ -66,20 +66,24 @@ private val person = """
 private val barnBolk = """
     query($identer: [ID!]!) {
         hentPersonBolk(identer: $identer) {
-            adressebeskyttelse {
-                gradering
-            },
-            doedsfall {
-                doedsdato
-            },
-            foedsel {
-                foedselsdato
-            },
-            navn {
-               fornavn,
-               etternavn,
-               mellomnavn
-           }
+            ident,
+            person {
+                adressebeskyttelse {
+                    gradering
+                },
+                doedsfall {
+                    doedsdato
+                },
+                foedsel {
+                    foedselsdato
+                },
+                navn {
+                    fornavn,
+                    etternavn,
+                    mellomnavn
+               }
+            }
+            code
         }
     }
 """.trimIndent()

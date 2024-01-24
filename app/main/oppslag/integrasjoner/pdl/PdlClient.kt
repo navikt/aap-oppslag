@@ -13,9 +13,9 @@ import oppslag.SECURE_LOGGER
 import oppslag.http.HttpClientFactory
 
 class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, azureConfig: AzureConfig, private val pdlConfig: PdlConfig) {
-    private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
-    private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope)
     private val httpClient = HttpClientFactory.create()
+    private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
+    private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope, httpClient)
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
         val res = query(tokenXToken, PdlRequest.hentPerson(personident), callId)

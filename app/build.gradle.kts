@@ -39,7 +39,7 @@ dependencies {
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
 
     testImplementation(kotlin("test"))
-    testImplementation("com.nimbusds:nimbus-jose-jwt:9.37.1")
+    testImplementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 }
 

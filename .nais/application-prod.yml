@@ -15,6 +15,9 @@ spec:
     min: 2
   tokenx:
     enabled: true
+  azure:
+    application:
+      enabled: true
   resources:
     limits:
       cpu: 1000m
@@ -42,6 +45,8 @@ spec:
       value: https://pdl-api.prod-fss-pub.nais.io/graphql
     - name: PDL_AUDIENCE
       value: prod-fss:pdl:pdl-api
+    - name: PDL_SCOPES
+      value: api://prod-fss.pdl.pdl-api/.default
     - name: KRR_BASE_URL
       value: http://digdir-krr-proxy.team-rocket
     - name: KRR_SCOPE

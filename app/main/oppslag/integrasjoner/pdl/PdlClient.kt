@@ -4,14 +4,17 @@ import oppslag.integrasjoner.pdl.PdlRequest.Companion.hentBarnInfo
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import no.nav.aap.ktor.client.AzureAdTokenProvider
+import no.nav.aap.ktor.client.AzureConfig
 import no.nav.aap.ktor.client.TokenXProviderConfig
 import no.nav.aap.ktor.client.TokenXTokenProvider
 import oppslag.PdlConfig
 import oppslag.SECURE_LOGGER
 import oppslag.http.HttpClientFactory
 
-class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val pdlConfig: PdlConfig) {
+class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, azureConfig: AzureConfig, private val pdlConfig: PdlConfig) {
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
+    private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope)
     private val httpClient = HttpClientFactory.create()
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
@@ -26,7 +29,7 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
             }.also { SECURE_LOGGER.info("fikk resultat ${it} for personident $personident") }
         val maybeBarn = runCatching {
             maybeRelatertPersonIdenter.map { personIdenter ->
-                hentBarnBolk(tokenXToken, personIdenter, callId).map {
+                hentBarnBolk(personIdenter, callId).map {
                     it.filter {
                         it.myndig().not() && it.beskyttet().not() && it.død().not()
                     }
@@ -54,8 +57,9 @@ class PdlGraphQLClient(tokenXProviderConfig: TokenXProviderConfig, private val p
             callId
         ).map { it.data?.hentPerson?.forelderBarnRelasjon?.mapNotNull { rel -> rel.relatertPersonsIdent} }
 
-    private suspend fun hentBarnBolk(tokenXToken: String, personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
-        return query(tokenXToken, hentBarnInfo(personIdenter), callId).map {
+    private suspend fun hentBarnBolk(personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
+        val azureToken = azureTokenProvider.getClientCredentialToken()
+        return query(azureToken, hentBarnInfo(personIdenter), callId).map {
             it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
                 barnInfo.person?.let {barn ->
                     PdlPerson(

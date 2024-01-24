@@ -1,5 +1,6 @@
 package oppslag
 
+import no.nav.aap.ktor.client.AzureConfig
 import no.nav.aap.ktor.client.TokenXProviderConfig
 import java.net.URI
 
@@ -24,9 +25,15 @@ internal object TestConfig {
         }""",
                 tokenEndpoint = "http://localhost:${fakes.tokenx.port()}/token",
             ),
+            azureConfig = AzureConfig(
+                clientId = "aap-oppslag",
+                clientSecret = "very-secret",
+                tokenEndpoint = URI.create("http://localhost:${fakes.azure.port()}/token").toURL(),
+            ),
             pdlConfig = PdlConfig(
                 baseUrl = "http://localhost:${fakes.krr.port()}", //TODO: ENDRE DENNE
-                audience = "dev-fss:pdl:pdl-api"
+                audience = "dev-fss:pdl:pdl-api",
+                scope = "api://dev-fss.pdl:pdl-api/.default"
             ),
             krrConfig = KrrConfig(
                 baseUrl = "http://localhost:${fakes.krr.port()}",

@@ -40,7 +40,7 @@ fun Application.api(
     config: Config = Config(),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-    val pdl = PdlGraphQLClient(config.tokenx, config.pdlConfig)
+    val pdl = PdlGraphQLClient(config.tokenx, config.azureConfig ,config.pdlConfig)
     val krr = KrrClient(config.tokenx, config.krrConfig)
     val behandler = BehandlerClient(config.tokenx, config.behandlerConfig)
     val saf = SafClient(config.tokenx, config.safConfig)

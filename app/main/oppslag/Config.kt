@@ -1,5 +1,6 @@
 package oppslag
 
+import no.nav.aap.ktor.client.AzureConfig
 import no.nav.aap.ktor.client.TokenXProviderConfig
 import java.net.URI
 
@@ -13,6 +14,11 @@ data class Config(
         jwksUrl = URI.create(getEnvVar("TOKEN_X_JWKS_URI")).toURL(),
         issuer = getEnvVar("TOKEN_X_ISSUER"),
     ),
+    val azureConfig: AzureConfig= AzureConfig(
+        clientId = getEnvVar("AZURE_APP_CLIENT_ID"),
+        clientSecret = getEnvVar("AZURE_APP_CLIENT_SECRET"),
+        tokenEndpoint = URI.create(getEnvVar("AZURE_APP_TOKEN_ENDPOINT")).toURL(),
+    ),
     val pdlConfig: PdlConfig = PdlConfig(),
     val krrConfig: KrrConfig = KrrConfig(),
     val behandlerConfig: BehandlerConfig = BehandlerConfig(),
@@ -22,7 +28,8 @@ data class Config(
 
 data class PdlConfig(
     val baseUrl: String = getEnvVar("PDL_BASE_URL"),
-    val audience: String = getEnvVar("PDL_AUDIENCE")
+    val audience: String = getEnvVar("PDL_AUDIENCE"),
+    val scope: String = getEnvVar("PDL_SCOPE")
 )
 
 data class KrrConfig(

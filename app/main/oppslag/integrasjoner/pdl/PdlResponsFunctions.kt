@@ -21,7 +21,7 @@ internal fun PdlPerson.toBarn(): Barn {
     return Barn(
         navn = this.fulltNavn() ?: "",
         fødselsdato = fødselsdato,
-        pdlStatus = requireNotNull(this.code).toPdlStatus()
+        pdlStatus = this.code?.toPdlStatus() ?: PdlStatus.OK
     )
 }
 

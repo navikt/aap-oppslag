@@ -2,7 +2,6 @@ package oppslag.auth
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import org.slf4j.Logger
 import java.time.Instant
 
 internal data class Token(val expires_in: Long, val access_token: String) {
@@ -22,12 +21,6 @@ internal data class Token(val expires_in: Long, val access_token: String) {
 internal class TokenCache {
     private val tokens: HashMap<String, Token> = hashMapOf()
     private val mutex = Mutex()
-
-    internal fun logg(logger: Logger) {
-        tokens.forEach { (key, value) ->
-            logger.info("Key: $key, Value: $value")
-        }
-    }
 
     internal suspend fun add(key: String, token: Token) {
         mutex.withLock {

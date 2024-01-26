@@ -40,8 +40,8 @@ class PdlGraphQLClient(
                 } else {
                     listeMedBarn
                 }
-            }.map {
-                it.mapToBarn()
+            }.map { resultat ->
+                resultat.mapToBarn()
             }
     }
 

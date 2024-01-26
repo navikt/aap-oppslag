@@ -2,6 +2,7 @@ package oppslag.integrasjoner.saf
 
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import oppslag.auth.TokenXProviderConfig
 import oppslag.auth.TokenXTokenProvider
@@ -18,8 +19,15 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         return journalposter?.toDokumenter() ?: emptyList()
     }
 
-    suspend fun hentDokument(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String) =
-        restQuery(tokenXToken, journalpostId, dokumentId, callId)
+    suspend fun hentDokument(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String): ByteArray {
+        val response = restQuery(tokenXToken, journalpostId, dokumentId, callId)
+
+        return when(response.status) {
+            HttpStatusCode.OK -> response.body()
+            HttpStatusCode.NotFound -> throw DokumentIkkeFunnet("Fant ikke dokument $dokumentId for journalpost $journalpostId")
+            else -> throw SafException("Feil fra saf: ${response.status} : ${response.bodyAsText()}")
+        }
+    }
 
     private suspend fun graphqlQuery(tokenXToken: String, query: SafRequest, callId: String): SafRespons {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
@@ -43,5 +51,5 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
             header("Nav-Call-Id", callId)
             bearerAuth(tokenProvider.getOnBehalfOfToken(tokenXToken))
             contentType(ContentType.Application.Json)
-        }.body<ByteArray>()
+        }
 }

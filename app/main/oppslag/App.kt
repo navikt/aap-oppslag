@@ -23,7 +23,9 @@ import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.krr.KrrClient
 import oppslag.integrasjoner.pdl.PdlException
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
+import oppslag.integrasjoner.saf.DokumentIkkeFunnet
 import oppslag.integrasjoner.saf.SafClient
+import oppslag.integrasjoner.saf.SafException
 import oppslag.routes.*
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -69,6 +71,13 @@ fun Application.api(
         exception<PdlException> { call, cause ->
             SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
             call.respondText(text = "Feil i PDL: ${cause.message}", status = HttpStatusCode.InternalServerError)
+        }
+        exception<SafException> { call, cause ->
+            SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
+            call.respondText(text = "${cause.message}", status = HttpStatusCode.InternalServerError)
+        }
+        exception<DokumentIkkeFunnet> { call, cause ->
+            call.respondText(text = "${cause.message}", status = HttpStatusCode.NotFound)
         }
         exception<Throwable> { call, cause ->
             SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)

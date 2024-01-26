@@ -34,7 +34,6 @@ class AzureAdTokenProvider(
     private val cache = TokenCache()
 
     private suspend fun getAccessToken(cacheKey: String, body: () -> String): String {
-        cache.logg(secureLog)
         val token = cache.get(cacheKey)
             ?: client.post(config.tokenEndpoint) {
                 accept(ContentType.Application.Json)

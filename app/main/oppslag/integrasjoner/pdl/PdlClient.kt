@@ -19,7 +19,7 @@ class PdlGraphQLClient(
 ) {
     private val httpClient = HttpClientFactory.create()
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
-    private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope, httpClient)
+    private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope, httpClient).also { SECURE_LOGGER.info("azure scope: ${pdlConfig.scope}") }
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
@@ -34,10 +34,15 @@ class PdlGraphQLClient(
             }.also { SECURE_LOGGER.info("fikk resultat ${it} for personident $personident") }
         val maybeBarn = runCatching {
             maybeRelatertPersonIdenter.map { personIdenter ->
-                hentBarnBolk(personIdenter, callId).map {
-                    it.filter {
-                        it.myndig().not() && it.beskyttet().not() && it.død().not()
+                try {
+                    hentBarnBolk(personIdenter, callId).map {
+                        it.filter {
+                            it.myndig().not() && it.beskyttet().not() && it.død().not()
+                        }
                     }
+                } catch (e: Exception) {
+                    SECURE_LOGGER.error("Feil ved henting av barn", e)
+                    throw e
                 }
             }.fold(
                 onSuccess = { it.getOrThrow() },

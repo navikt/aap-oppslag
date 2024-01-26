@@ -5,7 +5,7 @@ plugins {
 }
 
 val ktorVersion = "2.3.7"
-val aapLibVersion = "3.7.144"
+val aapLibVersion = "3.7.145"
 
 application {
     mainClass.set("oppslag.AppKt")

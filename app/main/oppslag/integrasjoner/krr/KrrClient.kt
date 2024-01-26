@@ -6,8 +6,8 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.prometheus.client.Summary
 import kotlinx.coroutines.runBlocking
-import no.nav.aap.ktor.client.TokenXProviderConfig
-import no.nav.aap.ktor.client.TokenXTokenProvider
+import oppslag.auth.TokenXProviderConfig
+import oppslag.auth.TokenXTokenProvider
 import oppslag.KrrConfig
 import oppslag.http.HttpClientFactory
 

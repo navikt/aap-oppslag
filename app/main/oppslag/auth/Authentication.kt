@@ -7,7 +7,6 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
-import no.nav.aap.ktor.client.TokenXProviderConfig
 import oppslag.SECURE_LOGGER
 import java.util.*
 import java.util.concurrent.TimeUnit

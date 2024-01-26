@@ -3,8 +3,8 @@ package oppslag.integrasjoner.saf
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import no.nav.aap.ktor.client.TokenXProviderConfig
-import no.nav.aap.ktor.client.TokenXTokenProvider
+import oppslag.auth.TokenXProviderConfig
+import oppslag.auth.TokenXTokenProvider
 import oppslag.SafConfig
 import oppslag.http.HttpClientFactory
 

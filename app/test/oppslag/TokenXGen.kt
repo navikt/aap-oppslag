@@ -8,7 +8,7 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import no.nav.aap.ktor.client.TokenXProviderConfig
+import oppslag.auth.TokenXProviderConfig
 import org.intellij.lang.annotations.Language
 import java.util.*
 

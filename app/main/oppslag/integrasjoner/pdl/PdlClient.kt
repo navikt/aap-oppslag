@@ -4,12 +4,12 @@ import oppslag.integrasjoner.pdl.PdlRequest.Companion.hentBarnInfo
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import no.nav.aap.ktor.client.AzureAdTokenProvider
-import no.nav.aap.ktor.client.AzureConfig
-import no.nav.aap.ktor.client.TokenXProviderConfig
-import no.nav.aap.ktor.client.TokenXTokenProvider
 import oppslag.PdlConfig
 import oppslag.SECURE_LOGGER
+import oppslag.auth.AzureAdTokenProvider
+import oppslag.auth.AzureConfig
+import oppslag.auth.TokenXProviderConfig
+import oppslag.auth.TokenXTokenProvider
 import oppslag.http.HttpClientFactory
 
 class PdlGraphQLClient(

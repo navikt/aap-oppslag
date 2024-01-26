@@ -35,8 +35,8 @@ internal fun PdlPerson.myndig(): Boolean =
         LocalDate.now()
     ) ?: false
 
-internal fun PdlPerson.beskyttet() = this.adressebeskyttelse?.any {
-    it.gradering in listOf("FORTROLIG", "STRENGT_FORTROLIG_UTLAND", "STRENGT_FORTROLIG")
+internal fun PdlPerson.strengtFortroligAdresse() = this.adressebeskyttelse?.any {
+    it.gradering in listOf("STRENGT_FORTROLIG_UTLAND", "STRENGT_FORTROLIG")
 } ?: false
 
 internal fun PdlPerson.død() = this.doedsfall?.any() ?: false

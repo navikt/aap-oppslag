@@ -31,8 +31,13 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
             val personIdent = call.personident()
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val barn = pdl.hentBarn(personIdent, call.authToken(), callId)
-            SECURE_LOGGER.info("Barn: $barn")
-            call.respond(HttpStatusCode.OK, barn)
+            barn.onSuccess {
+                call.respond(HttpStatusCode.OK, it)
+            }
+            barn.onFailure {
+                SECURE_LOGGER.error("Feil ved henting av barn", it)
+                call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
+            }
         }
     }
 }

@@ -19,7 +19,7 @@ class PdlGraphQLClient(
 ) {
     private val httpClient = HttpClientFactory.create()
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
-    private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope, httpClient).also { SECURE_LOGGER.info("azure scope: ${pdlConfig.scope}") }
+    private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope).also { SECURE_LOGGER.info("azure scope: ${pdlConfig.scope}") }
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)

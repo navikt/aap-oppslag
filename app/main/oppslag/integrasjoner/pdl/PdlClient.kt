@@ -70,7 +70,12 @@ class PdlGraphQLClient(
     }
 
     private suspend fun hentBarnBolk(personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
-        val azureToken = azureTokenProvider.getClientCredentialToken()
+        val azureToken = try {
+            azureTokenProvider.getClientCredentialToken()
+        }catch (e: Exception){
+            SECURE_LOGGER.error("Feil ved henting av azure token", e)
+            throw e
+        }
         return query(azureToken, hentBarnInfo(personIdenter), callId).map {
             it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
                 barnInfo.person?.let { barn ->

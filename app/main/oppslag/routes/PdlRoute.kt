@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import oppslag.SECURE_LOGGER
 import oppslag.auth.authToken
 import oppslag.auth.personident
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
@@ -29,7 +30,9 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
         get("/barn") {
             val personIdent = call.personident()
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
-            call.respond(HttpStatusCode.OK, pdl.hentBarn(personIdent, call.authToken(), callId))
+            val barn = pdl.hentBarn(personIdent, call.authToken(), callId)
+            SECURE_LOGGER.info("Barn: $barn")
+            call.respond(HttpStatusCode.OK, barn)
         }
     }
 }

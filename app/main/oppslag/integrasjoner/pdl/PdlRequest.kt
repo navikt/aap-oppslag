@@ -68,7 +68,7 @@ private val barnBolk = """
         hentPersonBolk(identer: $identer) {
             ident,
             person {
-                adressebeskyttelse(gradering: "UGRADERT") {
+                adressebeskyttelse {
                     gradering
                 },
                 doedsfall {

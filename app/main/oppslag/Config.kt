@@ -1,7 +1,7 @@
 package oppslag
 
-import no.nav.aap.ktor.client.AzureConfig
-import no.nav.aap.ktor.client.TokenXProviderConfig
+import oppslag.auth.AzureConfig
+import oppslag.auth.TokenXProviderConfig
 import java.net.URI
 
 private fun getEnvVar(envar: String) = System.getenv(envar) ?: error("missing envvar $envar")
@@ -14,7 +14,7 @@ data class Config(
         jwksUrl = URI.create(getEnvVar("TOKEN_X_JWKS_URI")).toURL(),
         issuer = getEnvVar("TOKEN_X_ISSUER"),
     ),
-    val azureConfig: AzureConfig= AzureConfig(
+    val azureConfig: AzureConfig = AzureConfig(
         clientId = getEnvVar("AZURE_APP_CLIENT_ID"),
         clientSecret = getEnvVar("AZURE_APP_CLIENT_SECRET"),
         tokenEndpoint = URI.create(getEnvVar("AZURE_OPENID_CONFIG_TOKEN_ENDPOINT")).toURL(),

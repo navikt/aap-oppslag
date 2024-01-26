@@ -1,7 +1,7 @@
 package oppslag
 
-import no.nav.aap.ktor.client.AzureConfig
-import no.nav.aap.ktor.client.TokenXProviderConfig
+import oppslag.auth.AzureConfig
+import oppslag.auth.TokenXProviderConfig
 import java.net.URI
 
 internal object TestConfig {

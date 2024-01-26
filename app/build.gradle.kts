@@ -29,14 +29,12 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
-    implementation("com.github.navikt.aap-libs:ktor-auth-tokenx:$aapLibVersion")
-    implementation("com.github.navikt.aap-libs:ktor-auth-azuread:$aapLibVersion")
-
     implementation("io.micrometer:micrometer-registry-prometheus:1.12.2")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.16.1")
     implementation("ch.qos.logback:logback-classic:1.4.14")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
+    implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
 
     testImplementation(kotlin("test"))
     testImplementation("com.nimbusds:nimbus-jose-jwt:9.37.3")

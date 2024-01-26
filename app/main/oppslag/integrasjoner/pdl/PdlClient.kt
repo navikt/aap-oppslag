@@ -4,12 +4,12 @@ import oppslag.integrasjoner.pdl.PdlRequest.Companion.hentBarnInfo
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
-import no.nav.aap.ktor.client.AzureAdTokenProvider
-import no.nav.aap.ktor.client.AzureConfig
-import no.nav.aap.ktor.client.TokenXProviderConfig
-import no.nav.aap.ktor.client.TokenXTokenProvider
 import oppslag.PdlConfig
 import oppslag.SECURE_LOGGER
+import oppslag.auth.AzureAdTokenProvider
+import oppslag.auth.AzureConfig
+import oppslag.auth.TokenXProviderConfig
+import oppslag.auth.TokenXTokenProvider
 import oppslag.http.HttpClientFactory
 
 class PdlGraphQLClient(
@@ -30,31 +30,20 @@ class PdlGraphQLClient(
     suspend fun hentBarn(personident: String, tokenXToken: String, callId: String): Result<List<Barn>> {
         val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, tokenXToken, callId)
             .map {
-                it ?: emptyList<String>()
-            }.also { SECURE_LOGGER.info("fikk resultat ${it} for personident $personident") }
-        val maybeBarn = runCatching {
-            maybeRelatertPersonIdenter.map { personIdenter ->
-                try {
-                    hentBarnBolk(personIdenter, callId).map {
-                        it.filter {
-                            it.myndig().not() && it.beskyttet().not() && it.død().not()
-                        }
-                    }
-                } catch (e: Exception) {
-                    SECURE_LOGGER.error("Feil ved henting av barn", e)
-                    throw e
+                it ?: emptyList()
+            }
+
+        return maybeRelatertPersonIdenter.map { personIdenter ->
+                val listeMedBarn = hentBarnBolk(personIdenter, callId).filtrerBortDødeOgMyndige()
+                if(listeMedBarn.harBeskyttedePersoner()) {
+                    listeMedBarn.maskerNavn()
+                } else {
+                    listeMedBarn
                 }
-            }.fold(
-                onSuccess = { it.getOrThrow() },
-                onFailure = { throw it }
-            )
-        }
-        return maybeBarn.map {
-            mapToBarn(it)
-
-        }
+            }.map {
+                it.mapToBarn()
+            }
     }
-
 
     private suspend fun hentBarnRelasjon(
         personident: String,
@@ -70,12 +59,7 @@ class PdlGraphQLClient(
     }
 
     private suspend fun hentBarnBolk(personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
-        val azureToken = try {
-            azureTokenProvider.getClientCredentialToken()
-        }catch (e: Exception){
-            SECURE_LOGGER.error("Feil ved henting av azure token", e)
-            throw e
-        }
+        val azureToken = azureTokenProvider.getClientCredentialToken()
         return query(azureToken, hentBarnInfo(personIdenter), callId).map {
             it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
                 barnInfo.person?.let { barn ->
@@ -110,10 +94,40 @@ class PdlGraphQLClient(
             }
             respons
         }
-
     }
 }
 
-private fun mapToBarn(barn: List<PdlPerson>): List<Barn> {
-    return barn.map { it.toBarn() }
-}
+private fun Result<List<PdlPerson>>.mapToBarn(): List<Barn> =
+    this.fold(
+        onSuccess = {
+            it.map { pdlPerson ->
+                pdlPerson.toBarn()
+            }
+        },
+        onFailure = {
+            throw it
+        }
+    )
+
+private fun Result<List<PdlPerson>>.filtrerBortDødeOgMyndige() =
+    this.map {
+        it.filter { barn ->
+            barn.myndig().not() && barn.død().not()
+        }
+    }
+
+private fun Result<List<PdlPerson>>.maskerNavn() =
+    this.map {
+        it.mapIndexed { x, barn ->
+            barn.copy(navn = listOf(
+                PdlNavn("Barn", "${x + 1}", null)
+            ))
+        }
+    }
+
+private fun Result<List<PdlPerson>>.harBeskyttedePersoner(): Boolean =
+    this.map {
+        it.any { barn ->
+            barn.strengtFortroligAdresse()
+        }
+    }.getOrNull() == true

@@ -15,8 +15,11 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
 
     suspend fun hentDokumenter(personident: String, tokenXToken: String, callId: String): List<Dokument> {
         val res = graphqlQuery(tokenXToken, SafRequest.hentDokumenter(personident), callId)
-        val journalposter = res.data?.dokumentoversiktSelvbetjening
-        return journalposter?.toDokumenter() ?: emptyList()
+        val gyldigeJournalPostTyper= listOf("I", "U")
+        val journalposter = res.data?.dokumentoversiktSelvbetjening?.toDokumenter()?.filter {
+                it.type in gyldigeJournalPostTyper
+            }
+        return journalposter?: emptyList()
     }
 
     suspend fun hentDokument(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String): ByteArray {

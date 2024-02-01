@@ -13,6 +13,22 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, safConfig.scope)
     private val httpClient = HttpClientFactory.create()
 
+    suspend fun hentJson(personident: String, tokenXToken: String, callId: String, journalpostId: String): ByteArray {
+        val res = graphqlQuery(tokenXToken, SafRequest.hentDokumenter(personident), callId)
+        val journalpost = res.data?.dokumentoversiktSelvbetjening?.journalposter?.find {
+            it?.journalpostId == journalpostId
+        } ?: throw SafException("Fant ikke journalpost $journalpostId") //todo: erstatt men nytt safoppslag når tilgjengelig
+
+        val dokument = journalpost.dokumenter?.find {dokInfo ->
+            dokInfo?.dokumentvarianter?.find { dokVariant ->
+                dokVariant?.variantformat == SafVariantformat.ORIGINAL
+            } != null
+        }
+
+        return hentDokument(tokenXToken = tokenXToken, journalpostId = journalpostId, dokumentId = dokument?.dokumentInfoId!!, callId = callId)
+
+    }
+
     suspend fun hentDokumenter(personident: String, tokenXToken: String, callId: String): List<Dokument> {
         val res = graphqlQuery(tokenXToken, SafRequest.hentDokumenter(personident), callId)
         val journalposter = res.data?.dokumentoversiktSelvbetjening?.toDokumenter()

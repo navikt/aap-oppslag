@@ -51,6 +51,6 @@ internal data class SafDokumentvariant(
 )
 
 internal enum class SafVariantformat {
-    ARKIV, SLADDET
+    ARKIV, SLADDET, ORIGINAL
 }
 

@@ -34,6 +34,9 @@ class PdlGraphQLClient(
             }
 
         return maybeRelatertPersonIdenter.map { personIdenter ->
+                if (personIdenter.isEmpty()) {
+                    return Result.success(emptyList())
+                }
                 val listeMedBarn = hentBarnBolk(personIdenter, callId).filtrerBortDødeOgMyndige()
                 if(listeMedBarn.harBeskyttedePersoner()) {
                     listeMedBarn.maskerNavn()

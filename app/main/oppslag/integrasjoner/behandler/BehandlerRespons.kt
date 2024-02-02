@@ -17,7 +17,6 @@ data class BehandlerRespons(
 ) {
     fun tilBehandler() = RegistrertBehandler(
         navn = "${this.fornavn} ${this.mellomnavn ?: ""} ${this.etternavn}",
-        type = RegistrertBehandler.Type.valueOf(this.type),
         behandlerRef = this.behandlerRef,
         kontaktinformasjon = RegistrertBehandler.KontaktInformasjon(
             kontor,

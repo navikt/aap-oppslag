@@ -17,8 +17,8 @@ fun Route.behandlerRoute(behandler: BehandlerClient) {
         get {
             val callId = call.request.header("Nav-CallId")?:UUID.randomUUID().toString()
             val behandlersvar = behandler.hentBehandler(call.authToken(), callId)
+                .filter { RegistrertBehandler.Type.valueOf(it.type) == RegistrertBehandler.Type.FASTLEGE }
                 .map { it.tilBehandler() }
-                .filter { it.type == RegistrertBehandler.Type.FASTLEGE }
 
             if (behandlersvar.size > 1) {
                 SECURE_LOGGER.warn("Dette var rart, fant fler fastleger for bruker ${call.personident()} :wtf:")

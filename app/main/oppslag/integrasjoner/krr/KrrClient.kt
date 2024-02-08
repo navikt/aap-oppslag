@@ -4,6 +4,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.plugins.*
 import io.prometheus.client.Summary
 import kotlinx.coroutines.runBlocking
 import oppslag.auth.TokenXProviderConfig
@@ -40,6 +41,8 @@ class KrrClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfi
                 }
                 if (response.status.isSuccess() || response.status.value == 409) {
                     response.body()
+                } else if (response.status.value == 404){
+                    throw NotFoundException()
                 } else {
                     error("Feil mot krr (${response.status}): ${response.bodyAsText()}")
                 }

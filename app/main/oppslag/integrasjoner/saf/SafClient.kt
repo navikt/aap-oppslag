@@ -4,6 +4,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.plugins.*
 import oppslag.auth.TokenXProviderConfig
 import oppslag.auth.TokenXTokenProvider
 import oppslag.SafConfig
@@ -24,8 +25,14 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
                 dokVariant?.variantformat == SafVariantformat.ORIGINAL
             } != null
         }
+        if(dokument == null) throw NotFoundException("Fant ikke dokument for journalpost $journalpostId")
 
-        return hentDokument(tokenXToken = tokenXToken, journalpostId = journalpostId, dokumentId = dokument?.dokumentInfoId!!, callId = callId)
+        return hentDokument(
+            tokenXToken = tokenXToken,
+            journalpostId = journalpostId,
+            dokumentId = dokument.dokumentInfoId,
+            callId = callId
+        )
 
     }
 

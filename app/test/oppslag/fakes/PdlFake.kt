@@ -9,6 +9,7 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import oppslag.integrasjoner.pdl.PdlResponse
 
 
 fun Application.PdlFake() {
@@ -21,6 +22,7 @@ fun Application.PdlFake() {
 
     routing {
         post {
+            val code = oppslag.integrasjoner.pdl.Code.ok
             val body = call.receive<String>()
             if("hentPersonBolk" in body){
                 call.respondText(
@@ -40,20 +42,22 @@ fun Application.PdlFake() {
                                         ],
                                         "foedsel": [
                                             {
-                                                "foedselsdato": "1990-01-01"
+                                                "foedselsdato": "2020-01-01"
                                             }
                                         ],
                                         "doedsfall": [
                                             {
-                                                doedsdato: "2021-01-01"
+                                                "doedsdato": "2021-01-01"
                                             }
                                         ],
                                         "adressebeskyttelse": [
                                             {
                                                 "gradering": "UGRADERT"
                                             }
-                                        ]
-                                    }
+                                        ],
+                                        "code":"${code}"
+                                    },
+                                    "code":"${code}"
                                 },
                                 {
                                     "ident": "12345678911",
@@ -67,7 +71,7 @@ fun Application.PdlFake() {
                                         ],
                                         "foedsel": [
                                             {
-                                                "foedselsdato": "1990-01-01"
+                                                "foedselsdato": "2020-01-01"
                                             }
                                         ],
                                         "doedsfall": [],
@@ -75,8 +79,10 @@ fun Application.PdlFake() {
                                             {
                                                 "gradering": "UGRADERT"
                                             }
-                                        ]
-                                    }
+                                        ],
+                                        "code":"${code}"
+                                    },
+                                    "code":"${code}"
                                 },
                                 {
                                     "ident": "12345678912",
@@ -90,7 +96,7 @@ fun Application.PdlFake() {
                                         ],
                                         "foedsel": [
                                             {
-                                                "foedselsdato": "1990-01-01"
+                                                "foedselsdato": "2020-01-01"
                                             }
                                         ],
                                         "doedsfall": [],
@@ -98,8 +104,10 @@ fun Application.PdlFake() {
                                             {
                                                 "gradering": "STRENGT_FORTROLIG"
                                             }
-                                        ]
-                                    }
+                                        ],
+                                        "code":"${code}"
+                                    },
+                                    "code":"${code}"
                                 }
                             ]
                         }

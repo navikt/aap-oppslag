@@ -19,7 +19,10 @@ class PdlGraphQLClient(
 ) {
     private val httpClient = HttpClientFactory.create()
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
-    private val azureTokenProvider = AzureAdTokenProvider(azureConfig, pdlConfig.scope).also { SECURE_LOGGER.info("azure scope: ${pdlConfig.scope}") }
+    private val azureTokenProvider = AzureAdTokenProvider(
+        azureConfig,
+        pdlConfig.scope
+    ).also { SECURE_LOGGER.info("azure scope: ${pdlConfig.scope}") }
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
@@ -34,18 +37,18 @@ class PdlGraphQLClient(
             }
 
         return maybeRelatertPersonIdenter.map { personIdenter ->
-                if (personIdenter.isEmpty()) {
-                    return Result.success(emptyList())
-                }
-                val listeMedBarn = hentBarnBolk(personIdenter, callId).filtrerBortDødeOgMyndige()
-                if(listeMedBarn.harBeskyttedePersoner()) {
-                    listeMedBarn.maskerNavn()
-                } else {
-                    listeMedBarn
-                }
-            }.map { resultat ->
-                resultat.mapToBarn()
+            if (personIdenter.isEmpty()) {
+                return Result.success(emptyList())
             }
+            val listeMedBarn = hentBarnBolk(personIdenter, callId).filtrerBortDødeOgMyndige()
+            if (listeMedBarn.harBeskyttedePersoner()) {
+                listeMedBarn.maskerNavn()
+            } else {
+                listeMedBarn
+            }
+        }.map { resultat ->
+            resultat.mapToBarn()
+        }
     }
 
     private suspend fun hentBarnRelasjon(
@@ -63,22 +66,23 @@ class PdlGraphQLClient(
 
     private suspend fun hentBarnBolk(personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
         val azureToken = azureTokenProvider.getClientCredentialToken()
-        return query(azureToken, hentBarnInfo(personIdenter), callId).map {
-            it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
-                barnInfo.person?.let { barn ->
-                    PdlPerson(
-                        adressebeskyttelse = barn.adressebeskyttelse,
-                        navn = barn.navn,
-                        foedsel = barn.foedsel,
-                        forelderBarnRelasjon = null,
-                        bostedsadresse = null,
-                        fnr = barn.fnr,
-                        doedsfall = null,
-                        code = barn.code
-                    )
-                }
-            } ?: emptyList()
-        }
+        return query(azureToken, hentBarnInfo(personIdenter), callId)
+            .map {
+                it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
+                    barnInfo.person?.let { barn ->
+                        PdlPerson(
+                            adressebeskyttelse = barn.adressebeskyttelse,
+                            navn = barn.navn,
+                            foedsel = barn.foedsel,
+                            forelderBarnRelasjon = null,
+                            bostedsadresse = null,
+                            fnr = barn.fnr,
+                            doedsfall = null,
+                            code = barn.code
+                        )
+                    }
+                } ?: emptyList()
+            }
     }
 
     private suspend fun query(accessToken: String, query: PdlRequest, callId: String): Result<PdlResponse> {
@@ -122,9 +126,11 @@ private fun Result<List<PdlPerson>>.filtrerBortDødeOgMyndige() =
 private fun Result<List<PdlPerson>>.maskerNavn() =
     this.map {
         it.mapIndexed { x, barn ->
-            barn.copy(navn = listOf(
-                PdlNavn("Barn", "${x + 1}", null)
-            ))
+            barn.copy(
+                navn = listOf(
+                    PdlNavn("Barn", "${x + 1}", null)
+                )
+            )
         }
     }
 

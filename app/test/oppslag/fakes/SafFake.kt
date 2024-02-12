@@ -23,5 +23,10 @@ fun Application.SafFake() {
         get("/dokumenter"){
             call.respond(emptyList<Dokument>())
         }
+        post("/graphql"){
+            call.respond(res(null))
+        }
     }
 }
+
+private data class res(val data:String?)

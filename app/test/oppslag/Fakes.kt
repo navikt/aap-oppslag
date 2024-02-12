@@ -12,6 +12,7 @@ class Fakes : AutoCloseable {
     val behandler = embeddedServer(Netty, port = 0, module = Application::BehandlerFake).apply { start() }
     val saf = embeddedServer(Netty, port = 0, module = Application::SafFake).apply { start() }
     val azure = embeddedServer(Netty, port = 0, module = Application::AzureAdFake).apply { start() }
+    val pdl = embeddedServer(Netty, port = 0, module = Application::PdlFake).apply { start() }
 
     override fun close() {
         krr.stop(0L, 0L)
@@ -19,6 +20,7 @@ class Fakes : AutoCloseable {
         behandler.stop(0L, 0L)
         saf.stop(0L, 0L)
         azure.stop(0L, 0L)
+        pdl.stop(0L, 0L)
     }
 }
 

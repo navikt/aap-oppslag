@@ -17,7 +17,7 @@ class PdlTest {
 
     @Test
     fun `Kan hente personData`() {
-        /*Fakes().use { fakes ->
+        Fakes().use { fakes ->
             testApplication {
                 val config = TestConfig.default(fakes)
                 application { api(config) }
@@ -35,7 +35,6 @@ class PdlTest {
 
                 assertEquals(HttpStatusCode.OK, res.status)
             }
-        }*/
-        assertEquals(1, 1)
+        }
     }
 }

@@ -31,7 +31,7 @@ internal object TestConfig {
                 tokenEndpoint = URI.create("http://localhost:${fakes.azure.port()}/token").toURL(),
             ),
             pdlConfig = PdlConfig(
-                baseUrl = "http://localhost:${fakes.krr.port()}", //TODO: ENDRE DENNE
+                baseUrl = "http://localhost:${fakes.pdl.port()}", //TODO: ENDRE DENNE
                 audience = "dev-fss:pdl:pdl-api",
                 scope = "api://dev-fss.pdl:pdl-api/.default"
             ),

@@ -5,6 +5,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.plugins.*
+import oppslag.SECURE_LOGGER
 import oppslag.auth.TokenXProviderConfig
 import oppslag.auth.TokenXTokenProvider
 import oppslag.SafConfig
@@ -25,7 +26,8 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
                 dokVariant?.variantformat == SafVariantformat.ORIGINAL
             } != null
         }
-        if(dokument == null) throw NotFoundException("Fant ikke dokument for journalpost $journalpostId")
+        SECURE_LOGGER.error("Fant ikke orginalJson for søknad men journalpost: $journalpostId")
+        if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId")
 
         return hentDokument(
             tokenXToken = tokenXToken,

@@ -26,7 +26,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
                 dokVariant?.variantformat == SafVariantformat.ORIGINAL
             } != null
         }
-        SECURE_LOGGER.error("Fant ikke orginalJson for søknad men journalpost: $journalpostId")
+        SECURE_LOGGER.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
         if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId")
 
         return hentDokument(

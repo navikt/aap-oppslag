@@ -29,6 +29,8 @@ internal object TestConfig {
                 clientId = "aap-oppslag",
                 clientSecret = "very-secret",
                 tokenEndpoint = URI.create("http://localhost:${fakes.azure.port()}/token").toURL(),
+                jwks = URI.create("http://localhost:${fakes.azure.port()}/jwks").toURL(),
+                issuer = "azure"
             ),
             pdlConfig = PdlConfig(
                 baseUrl = "http://localhost:${fakes.pdl.port()}", //TODO: ENDRE DENNE

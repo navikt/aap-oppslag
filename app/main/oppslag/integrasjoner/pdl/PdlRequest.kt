@@ -11,6 +11,11 @@ internal data class PdlRequest(val query: String, val variables: Variables) {
             variables = Variables(ident = personident),
         )
 
+        fun hentNavn(personident: String) = PdlRequest(
+            query = navn.asQuery(),
+            variables = Variables(ident = personident),
+        )
+
         fun hentBarnRelasjon(personident: String) = PdlRequest(
             query = barnRelasjon.asQuery(),
             variables = Variables(ident = personident),
@@ -32,6 +37,17 @@ private val barnRelasjon = """
         hentPerson(ident: $ident) {
             forelderBarnRelasjon {
                 relatertPersonsIdent
+            }
+        }
+    }
+""".trimIndent()
+
+private val navn  = """
+    query($ident: ID!) {
+        hentPerson(ident: $ident) {
+            navn {
+                fornavn,
+                etternavn,
             }
         }
     }

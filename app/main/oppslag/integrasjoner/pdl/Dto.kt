@@ -12,6 +12,11 @@ data class Søker(
     val fødseldato: LocalDate? = null
 )
 
+data class Navn(
+    val fornavn: String,
+    val etternavn: String,
+)
+
 data class Barn(
     val navn: String?,
     val fødselsdato: LocalDate?,

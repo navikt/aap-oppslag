@@ -50,6 +50,7 @@ fun Application.api(
     install(MicrometerMetrics) { registry = prometheus }
 
     authentication(config.tokenx)
+    authentication(config.azureConfig)
 
     install(CallLogging) {
         level = Level.INFO
@@ -94,11 +95,13 @@ fun Application.api(
 
     routing {
         authenticate(TOKENX) {
-            pdlRoute(pdl)
             behandlerRoute(behandler)
             krrRoute(krr)
             safRoute(saf)
         }
+
+        pdlRoute(pdl)
+
         actuator(prometheus)
     }
 }

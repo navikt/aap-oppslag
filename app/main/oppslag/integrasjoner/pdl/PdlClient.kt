@@ -30,6 +30,14 @@ class PdlGraphQLClient(
         return res.map { it.data?.hentPerson?.toSøker() }
     }
 
+    suspend fun hentNavn(personident: String, callId: String): Result<Navn> {
+        val token = azureTokenProvider.getClientCredentialToken()
+
+        return query(token, PdlRequest.hentNavn(personident), callId).map {
+            it.data?.hentPerson?.toNavn() ?: error("Fant ikke person $personident i PDL")
+        }
+    }
+
     suspend fun hentBarn(personident: String, tokenXToken: String, callId: String): Result<List<Barn>> {
         val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, tokenXToken, callId)
             .map {

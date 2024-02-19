@@ -25,6 +25,11 @@ internal fun PdlPerson.toBarn(): Barn {
     )
 }
 
+internal fun PdlPerson.toNavn(): Navn {
+    val navn = this.navn?.firstOrNull() ?: error("Navn mangler i PDL respons")
+    return Navn(navn.fornavn, navn.etternavn)
+}
+
 internal fun Code.toPdlStatus(): PdlStatus = PdlStatus.valueOf(this.name.uppercase())
 
 internal fun PdlPerson.fulltNavn(): String? =

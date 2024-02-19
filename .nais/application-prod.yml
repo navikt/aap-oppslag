@@ -64,6 +64,7 @@ spec:
       rules:
         - application: soknad
         - application: innsyn
+        - application: innsending
     outbound:
       external:
         - host: pdl-api.prod-fss-pub.nais.io

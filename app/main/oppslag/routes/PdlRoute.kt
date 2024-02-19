@@ -12,6 +12,7 @@ import oppslag.auth.TOKENX
 import oppslag.auth.authToken
 import oppslag.auth.personident
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
+import java.util.*
 
 fun Route.pdlRoute(pdl: PdlGraphQLClient) {
     authenticate(TOKENX) {
@@ -49,7 +50,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
     authenticate(AZURE) {
         route("/person") {
             get("/navn") {
-                val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
+                val callId = call.request.header("Nav-CallId") ?: UUID.randomUUID().toString()
                 val personident = call.request.header("personident")
                     ?: return@get call.respond(HttpStatusCode.BadRequest, "mangler personident i header")
 

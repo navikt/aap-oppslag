@@ -26,8 +26,9 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
                 dokVariant?.variantformat == SafVariantformat.ORIGINAL
             } != null
         }
-
-        if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId")
+        if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId").also {
+            SECURE_LOGGER.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
+        }
 
         return hentDokument(
             tokenXToken = tokenXToken,

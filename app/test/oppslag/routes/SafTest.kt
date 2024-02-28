@@ -46,4 +46,31 @@ class SafTest {
             }
         }
     }
+
+    @Test
+    fun `Henter ut JSON`() {
+        Fakes().use { fakes ->
+            testApplication {
+                val config = TestConfig.default(fakes)
+                application { api(config) }
+                val client = createClient {
+                    install(ContentNegotiation) {
+                        jackson {
+                            registerModule(JavaTimeModule())
+                            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                        }
+                    }
+                }
+
+                val tokenXGen = TokenXGen(config.tokenx)
+                val res = client.get("/dokumenter/400000000/json") {
+                    bearerAuth(tokenXGen.generate("12345678910"))
+                    header("Nav-CallId", UUID.randomUUID())
+                    accept(ContentType.Application.Json)
+                }.body<ByteArray>()
+
+                assertEquals("{}", String(res))
+            }
+        }
+    }
 }

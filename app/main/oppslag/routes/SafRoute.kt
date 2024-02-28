@@ -43,11 +43,10 @@ fun Route.safRoute(saf: SafClient) {
             call.respond(HttpStatusCode.OK, fil)
         }
 
-        get("/{journalpostid}/{dokumentid}/json"){
+        get("/{journalpostid}/json"){
             val token = call.authToken()
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
-            val dokumentid = requireNotNull(call.parameters["dokumentid"]) { "dokumentid er ikke satt" }
 
             call.response.header(
                 HttpHeaders.ContentDisposition,
@@ -64,8 +63,7 @@ fun Route.safRoute(saf: SafClient) {
                     saf.hentJson(
                         tokenXToken = token,
                         callId = callId,
-                        journalpostId = journalpostid,
-                        dokumentId = dokumentid
+                        journalpostId = journalpostid
                     )
                 )
             } catch (e: NotFoundException) {

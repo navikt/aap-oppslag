@@ -22,7 +22,7 @@ fun Application.SafFake() {
     }
 
     routing {
-        get("/rest/hentdokument/123/123/ORIGINAL"){
+        get("/rest/hentdokument/400000000/23423535/ORIGINAL"){
             call.respond("{}".toByteArray())
         }
 

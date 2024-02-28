@@ -15,12 +15,23 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, safConfig.scope)
     private val httpClient = HttpClientFactory.create()
 
-    suspend fun hentJson(tokenXToken: String, callId: String, journalpostId: String, dokumentId: String): ByteArray {
-        val response = restQuery(tokenXToken, journalpostId, dokumentId, callId, "ORIGINAL")
+    suspend fun hentJson(tokenXToken: String, callId: String, journalpostId: String): ByteArray {
+        val journalpost = graphqlQuery(tokenXToken, SafRequest.hentJournalpost(journalpostId), callId).data?.journalpostById ?: throw SafException("Fant ikke journalpost for $journalpostId")
+
+        val dokument = journalpost.dokumenter?.find {dokInfo ->
+            dokInfo?.dokumentvarianter?.find { dokVariant ->
+                dokVariant?.variantformat == SafVariantformat.ORIGINAL
+            } != null
+        }
+        if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId").also {
+            SECURE_LOGGER.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
+        }
+
+        val response = restQuery(tokenXToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")
 
         return when(response.status) {
             HttpStatusCode.OK -> response.body()
-            HttpStatusCode.NotFound -> throw DokumentIkkeFunnet("Fant ikke dokument $dokumentId for journalpost $journalpostId")
+            HttpStatusCode.NotFound -> throw DokumentIkkeFunnet("Fant ikke dokument ${dokument.dokumentInfoId} for journalpost $journalpostId")
             else -> throw SafException("Feil fra saf: ${response.status} : ${response.bodyAsText()}")
         }
     }

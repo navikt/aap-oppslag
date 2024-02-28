@@ -18,6 +18,13 @@ fun Route.safRoute(saf: SafClient) {
             call.respond(saf.hentDokumenter(personIdent, call.authToken(), callId))
         }
 
+        get("/{journalpostid}") {
+            val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
+            val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
+
+            call.respond(saf.hentJournalpostSomDokumenter(journalpostid, call.authToken(), callId))
+        }
+
         get("/{journalpostid}/{dokumentid}") {
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
@@ -36,11 +43,12 @@ fun Route.safRoute(saf: SafClient) {
             call.respond(HttpStatusCode.OK, fil)
         }
 
-        get("/{journalpostid}/json"){
-            val personIdent = call.personident()
+        get("/{journalpostid}/{dokumentid}/json"){
             val token = call.authToken()
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
+            val dokumentid = requireNotNull(call.parameters["dokumentid"]) { "dokumentid er ikke satt" }
+
             call.response.header(
                 HttpHeaders.ContentDisposition,
                 ContentDisposition.Attachment
@@ -54,10 +62,10 @@ fun Route.safRoute(saf: SafClient) {
                 call.respond(
                     HttpStatusCode.OK,
                     saf.hentJson(
-                        personident = personIdent,
                         tokenXToken = token,
                         callId = callId,
-                        journalpostId = journalpostid
+                        journalpostId = journalpostid,
+                        dokumentId = dokumentid
                     )
                 )
             } catch (e: NotFoundException) {

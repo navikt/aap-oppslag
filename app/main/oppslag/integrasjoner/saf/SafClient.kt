@@ -15,28 +15,20 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, safConfig.scope)
     private val httpClient = HttpClientFactory.create()
 
-    suspend fun hentJson(personident: String, tokenXToken: String, callId: String, journalpostId: String): ByteArray {
-        val res = graphqlQuery(tokenXToken, SafRequest.hentDokumenter(personident), callId)
-        val journalpost = res.data?.dokumentoversiktSelvbetjening?.journalposter?.find {
-            it?.journalpostId == journalpostId
-        } ?: throw SafException("Fant ikke journalpost $journalpostId") //todo: erstatt men nytt safoppslag når tilgjengelig
+    suspend fun hentJson(tokenXToken: String, callId: String, journalpostId: String, dokumentId: String): ByteArray {
+        val response = restQuery(tokenXToken, journalpostId, dokumentId, callId, "ORIGINAL")
 
-        val dokument = journalpost.dokumenter?.find {dokInfo ->
-            dokInfo?.dokumentvarianter?.find { dokVariant ->
-                dokVariant?.variantformat == SafVariantformat.ORIGINAL
-            } != null
+        return when(response.status) {
+            HttpStatusCode.OK -> response.body()
+            HttpStatusCode.NotFound -> throw DokumentIkkeFunnet("Fant ikke dokument $dokumentId for journalpost $journalpostId")
+            else -> throw SafException("Feil fra saf: ${response.status} : ${response.bodyAsText()}")
         }
-        if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId").also {
-            SECURE_LOGGER.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
-        }
+    }
 
-        return hentDokument(
-            tokenXToken = tokenXToken,
-            journalpostId = journalpostId,
-            dokumentId = dokument.dokumentInfoId,
-            callId = callId
-        )
-
+    suspend fun hentJournalpostSomDokumenter(journalpostId: String, tokenXToken: String, callId: String): List<Dokument> {
+        val res = graphqlQuery(tokenXToken, SafRequest.hentJournalpost(journalpostId), callId)
+        val journalposter = res.data?.journalpostById?.toDokumenter()
+        return journalposter ?: emptyList()
     }
 
     suspend fun hentDokumenter(personident: String, tokenXToken: String, callId: String): List<Dokument> {
@@ -72,8 +64,14 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         return respons
     }
 
-    private suspend fun restQuery(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String) =
-        httpClient.get("${safConfig.baseUrl}/rest/hentdokument/$journalpostId/$dokumentId/ARKIV") {
+    private suspend fun restQuery(
+        tokenXToken: String,
+        journalpostId: String,
+        dokumentId: String,
+        callId: String,
+        arkivtype: String = "ARKIV"
+    ) =
+        httpClient.get("${safConfig.baseUrl}/rest/hentdokument/$journalpostId/$dokumentId/$arkivtype") {
             header("Nav-Call-Id", callId)
             bearerAuth(tokenProvider.getOnBehalfOfToken(tokenXToken))
             contentType(ContentType.Application.Json)

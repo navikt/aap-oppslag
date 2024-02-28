@@ -11,7 +11,8 @@ internal data class SafRespons(
 )
 
 internal data class SafData(
-    val dokumentoversiktSelvbetjening: SafDokumentoversikt?
+    val dokumentoversiktSelvbetjening: SafDokumentoversikt?,
+    val journalpostById: SafJournalpost?
 )
 
 internal data class SafDokumentoversikt(
@@ -22,6 +23,7 @@ internal data class SafJournalpost(
     val journalpostId: String,
     val journalposttype: String,
     val eksternReferanseId: String?,
+    val tittel: String?,
     val relevanteDatoer: List<SafRelevantDato>,
     val dokumenter: List<SafDokumentInfo?>?
 )

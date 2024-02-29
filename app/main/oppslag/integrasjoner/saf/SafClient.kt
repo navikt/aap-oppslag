@@ -5,11 +5,13 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.plugins.*
+import io.ktor.utils.io.jvm.javaio.*
 import oppslag.SECURE_LOGGER
 import oppslag.auth.TokenXProviderConfig
 import oppslag.auth.TokenXTokenProvider
 import oppslag.SafConfig
 import oppslag.http.HttpClientFactory
+import java.io.InputStream
 
 class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfig: SafConfig) {
     private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, safConfig.scope)
@@ -48,11 +50,11 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         return journalposter?: emptyList()
     }
 
-    suspend fun hentDokument(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String): ByteArray {
+    suspend fun hentDokument(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String): InputStream {
         val response = restQuery(tokenXToken, journalpostId, dokumentId, callId)
 
-        return when(response.status) {
-            HttpStatusCode.OK -> response.body()
+        return when (response.status) {
+            HttpStatusCode.OK -> response.bodyAsChannel().toInputStream()
             HttpStatusCode.NotFound -> throw DokumentIkkeFunnet("Fant ikke dokument $dokumentId for journalpost $journalpostId")
             else -> throw SafException("Feil fra saf: ${response.status} : ${response.bodyAsText()}")
         }

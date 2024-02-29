@@ -29,7 +29,7 @@ fun Route.safRoute(saf: SafClient) {
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
             val dokumentid = requireNotNull(call.parameters["dokumentid"]) { "dokumentid er ikke satt" }
-            val fil = saf.hentDokument(call.authToken(), journalpostid, dokumentid, callId)
+            val filStream = saf.hentDokument(call.authToken(), journalpostid, dokumentid, callId)
 
             call.response.header(
                 HttpHeaders.ContentDisposition,
@@ -40,7 +40,9 @@ fun Route.safRoute(saf: SafClient) {
                     )
                     .toString()
             )
-            call.respond(HttpStatusCode.OK, fil)
+            call.respondOutputStream {
+                filStream.copyTo(this)
+            }
         }
 
         get("/{journalpostid}/json"){

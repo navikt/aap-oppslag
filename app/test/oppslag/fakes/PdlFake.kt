@@ -10,6 +10,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import oppslag.integrasjoner.pdl.PdlResponse
+import java.time.LocalDate
 
 
 fun Application.PdlFake() {
@@ -71,7 +72,7 @@ fun Application.PdlFake() {
                                         ],
                                         "foedsel": [
                                             {
-                                                "foedselsdato": "2020-01-01"
+                                                "foedselsdato": "${LocalDate.now().minusYears(17)}"
                                             }
                                         ],
                                         "doedsfall": [],
@@ -89,14 +90,14 @@ fun Application.PdlFake() {
                                     "person": {
                                         "navn": [
                                             {
-                                                "fornavn": "Gradert",
+                                                "fornavn": "Myndig",
                                                 "mellomnavn": "Mellomnavn",
                                                 "etternavn": "Nordmann"
                                             }
                                         ],
                                         "foedsel": [
                                             {
-                                                "foedselsdato": "2020-01-01"
+                                                "foedselsdato": "${LocalDate.now().minusYears(20)}"
                                             }
                                         ],
                                         "doedsfall": [],

@@ -1,5 +1,6 @@
 package oppslag.routes
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
@@ -41,14 +42,16 @@ class PdlTest {
     }
 
     @Test
-    fun `Kan hente 0 barn`() {
+    fun `Kan hente levende og umyndige barn`() {
         Fakes().use { fakes ->
             testApplication {
                 val config = TestConfig.default(fakes)
                 application { api(config) }
                 val client = createClient {
                     install(ContentNegotiation){
-                        jackson()
+                        jackson {
+                            registerModule(JavaTimeModule())
+                        }
                     } }
 
                 val tokenXGen = TokenXGen(config.tokenx)
@@ -58,6 +61,8 @@ class PdlTest {
                     accept(ContentType.Application.Json)
                 }
 
+                val barn = res.body<List<Barn>>().single()
+                assertEquals(barn.navn, "kari Mellomnavn Nordmann")
                 assertEquals(HttpStatusCode.OK, res.status)
 
             }

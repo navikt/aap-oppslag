@@ -85,7 +85,7 @@ class PdlGraphQLClient(
                             forelderBarnRelasjon = null,
                             bostedsadresse = null,
                             fnr = barn.fnr,
-                            doedsfall = null,
+                            doedsfall = barn.doedsfall,
                             code = barn.code
                         )
                     }

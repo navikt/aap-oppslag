@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 
 val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
+val LOGGER: Logger = LoggerFactory.getLogger("aap-oppslag")
 
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
@@ -62,7 +63,6 @@ fun Application.api(
                 Method:         ${call.request.httpMethod.value}
                 User-agent:     ${call.request.headers["User-Agent"]}
                 CallId:         ${call.request.header("x-callId") ?: call.request.header("nav-callId")}
-                Authorization:  ${call.request.header("Authorization")}
             """.trimIndent()
         }
         filter { call -> call.request.path().startsWith("/actuator").not() }

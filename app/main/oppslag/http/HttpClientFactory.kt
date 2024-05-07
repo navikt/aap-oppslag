@@ -7,9 +7,9 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
 import io.ktor.serialization.jackson.*
-import oppslag.SECURE_LOGGER
+
+
 
 internal object HttpClientFactory {
     fun create(): HttpClient = HttpClient(CIO) {
@@ -18,13 +18,6 @@ internal object HttpClientFactory {
             connectTimeoutMillis = 5_000
         }
         install(HttpRequestRetry)
-
-        install(Logging) {
-            logger = object : Logger {
-                override fun log(message: String) = SECURE_LOGGER.info(message)
-            }
-            level = LogLevel.ALL
-        }
 
         install(ContentNegotiation) {
             jackson {

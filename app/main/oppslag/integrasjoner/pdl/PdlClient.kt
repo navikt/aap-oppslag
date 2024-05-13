@@ -98,6 +98,7 @@ class PdlGraphQLClient(
             accept(ContentType.Application.Json)
             header("Nav-Call-Id", callId)
             header("TEMA", "AAP")
+            header("Behandlingsnummer","B287")
             bearerAuth(accessToken)
             contentType(ContentType.Application.Json)
             setBody(query)

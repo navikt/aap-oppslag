@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import oppslag.SECURE_LOGGER
+import oppslag.LOGGER
 import oppslag.auth.AZURE
 import oppslag.auth.TOKENX
 import oppslag.auth.authToken
@@ -24,12 +25,15 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                     .onSuccess {
                         if (it != null) {
                             call.respond(HttpStatusCode.OK, it)
+                            LOGGER.trace("Hentet person")
                         } else {
                             call.respond(HttpStatusCode.NotFound, "Fant ikke person")
+                            LOGGER.warn("Fant ikke person")
                         }
                     }
                     .onFailure {
                         call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
+                        LOGGER.error("Feil ved henting av person, sjekk securelogs for mer info")
                     }
             }
             get("/barn") {
@@ -41,6 +45,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                 }
                 barn.onFailure {
                     SECURE_LOGGER.error("Feil ved henting av barn", it)
+                    LOGGER.error("Feil ved henting av barn, sjekk securelogs for mer info")
                     call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
                 }
             }

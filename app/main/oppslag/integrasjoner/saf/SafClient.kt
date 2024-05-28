@@ -7,6 +7,7 @@ import io.ktor.http.*
 import io.ktor.server.plugins.*
 import io.ktor.utils.io.jvm.javaio.*
 import oppslag.SECURE_LOGGER
+import oppslag.LOGGER
 import oppslag.auth.TokenXProviderConfig
 import oppslag.auth.TokenXTokenProvider
 import oppslag.SafConfig
@@ -26,7 +27,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
             } != null
         }
         if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId").also {
-            SECURE_LOGGER.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
+            LOGGER.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
         }
 
         val response = restQuery(tokenXToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")
@@ -73,6 +74,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         val respons = request.body<SafRespons>()
         if (respons.errors != null) {
             throw SafException("Feil mot SAF: ${respons.errors}")
+            LOGGER.error("Feil mot SAF ${respons.errors} for $callId")
         }
         return respons
     }

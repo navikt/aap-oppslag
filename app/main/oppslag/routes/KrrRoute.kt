@@ -8,6 +8,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import oppslag.auth.authToken
 import oppslag.auth.personident
+import oppslag.LOGGER
 import oppslag.integrasjoner.krr.KrrClient
 import java.util.*
 
@@ -18,8 +19,10 @@ fun Route.krrRoute(krr: KrrClient) {
             val callId = call.request.header("Nav-CallId") ?: UUID.randomUUID().toString()
             try {
                 val kontaktinformasjon = krr.hentKontaktinformasjon(call.authToken(), personIdent, callId).tilKontaktinfo()
+                LOGGER.trace("Hentet kontaktinformasjon for bruker")
                 call.respond(HttpStatusCode.OK, kontaktinformasjon)
             } catch (e: NotFoundException) {
+                LOGGER.error("Fant ikke kontaktinformasjon for bruker ")
                 call.respond(HttpStatusCode.NotFound)
             }
         }

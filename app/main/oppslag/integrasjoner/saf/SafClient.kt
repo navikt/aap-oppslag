@@ -28,6 +28,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         }
         if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId").also {
             LOGGER.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
+            LOGGER.error("innhold i journalpost: $journalpost")
         }
 
         val response = restQuery(tokenXToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")

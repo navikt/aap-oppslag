@@ -70,7 +70,6 @@ spec:
         - application: soknad
         - application: innsyn
         - application: innsending
-        - application: oppgavestyring
     outbound:
       external:
         - host: pdl-api.dev-fss-pub.nais.io

@@ -9,7 +9,6 @@ import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import oppslag.integrasjoner.pdl.PdlResponse
 import java.time.LocalDate
 
 
@@ -41,7 +40,7 @@ fun Application.PdlFake() {
                                                 "etternavn": "Nordmann"
                                             }
                                         ],
-                                        "foedsel": [
+                                        "foedselsdato": [
                                             {
                                                 "foedselsdato": "2020-01-01"
                                             }
@@ -70,7 +69,7 @@ fun Application.PdlFake() {
                                                 "etternavn": "Nordmann"
                                             }
                                         ],
-                                        "foedsel": [
+                                        "foedselsdato": [
                                             {
                                                 "foedselsdato": "${LocalDate.now().minusYears(17)}"
                                             }
@@ -95,7 +94,7 @@ fun Application.PdlFake() {
                                                 "etternavn": "Nordmann"
                                             }
                                         ],
-                                        "foedsel": [
+                                        "foedselsdato": [
                                             {
                                                 "foedselsdato": "${LocalDate.now().minusYears(20)}"
                                             }
@@ -152,7 +151,7 @@ fun Application.PdlFake() {
                                         "etternavn": "Nordmann"
                                     }
                                 ],
-                                "foedsel": [
+                                "foedselsdato": [
                                     {
                                         "foedselsdato": "1990-01-01"
                                     }

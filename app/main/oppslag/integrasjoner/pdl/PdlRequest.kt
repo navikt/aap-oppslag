@@ -56,7 +56,7 @@ private val navn  = """
 private val person = """
     query($ident: ID!) {
         hentPerson(ident: $ident) {
-            foedsel {
+            foedselsdato {
                 foedselsdato
             },
             adressebeskyttelse {
@@ -90,7 +90,7 @@ private val barnBolk = """
                 doedsfall {
                     doedsdato
                 },
-                foedsel {
+                foedselsdato {
                     foedselsdato
                 },
                 navn {

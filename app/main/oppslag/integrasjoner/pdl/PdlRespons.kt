@@ -26,7 +26,7 @@ internal data class PdlPerson(
     val adressebeskyttelse: List<Adressebeskyttelse>?,
     val navn: List<PdlNavn>?,
     val bostedsadresse: List<PdlBostedsadresse>? = null,
-    val foedsel: List<PdlFoedsel>?,
+    val foedselsdato: List<PdlFoedsel>?,
     val forelderBarnRelasjon: List<PdlForelderBarnRelasjon>? = null,
     val fnr: String? = null,
     val doedsfall: Set<PDLDødsfall>? = null,

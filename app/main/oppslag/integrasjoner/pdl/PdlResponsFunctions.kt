@@ -4,7 +4,7 @@ import java.time.LocalDate
 
 internal fun PdlPerson.toSøker(): Søker {
     val adresse = bostedsadresse?.firstOrNull()?.vegadresse?.adresse()
-    val fødselsdato = foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it) }
+    val fødselsdato = foedselsdato?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it) }
     return Søker(
         navn = this.fulltNavn() ?: "",
         fnr = fnr ?: "",
@@ -17,7 +17,7 @@ internal fun PdlPerson.toSøker(): Søker {
 }
 
 internal fun PdlPerson.toBarn(): Barn {
-    val fødselsdato = foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it) }
+    val fødselsdato = foedselsdato?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it) }
     return Barn(
         navn = this.fulltNavn() ?: "",
         fødselsdato = fødselsdato,
@@ -36,7 +36,7 @@ internal fun PdlPerson.fulltNavn(): String? =
     navn?.firstOrNull()?.let { "${it.fornavn} ${it.mellomnavn ?: ""} ${it.etternavn}" }
 
 internal fun PdlPerson.myndig(): Boolean =
-    this.foedsel?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it).plusYears(18) }?.isBefore(
+    this.foedselsdato?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it).plusYears(18) }?.isBefore(
         LocalDate.now()
     ) ?: false
 

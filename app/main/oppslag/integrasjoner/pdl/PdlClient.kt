@@ -81,7 +81,7 @@ class PdlGraphQLClient(
                         PdlPerson(
                             adressebeskyttelse = barn.adressebeskyttelse,
                             navn = barn.navn,
-                            foedsel = barn.foedsel,
+                            foedselsdato = barn.foedselsdato,
                             forelderBarnRelasjon = null,
                             bostedsadresse = null,
                             fnr = barn.fnr,

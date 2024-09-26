@@ -34,6 +34,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                     .onFailure {
                         call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
                         LOGGER.error("Feil ved henting av person, sjekk securelogs for mer info")
+                        SECURE_LOGGER.error("Feil ved henting av person", it)
                     }
             }
             get("/barn") {
@@ -63,6 +64,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                     .onSuccess { call.respond(it) }
                     .onFailure {
                         SECURE_LOGGER.error("Feil ved henting av navn", it)
+                        LOGGER.error("Feil ved henting av navn. Sjekk secure log for stacktrace")
                         call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
                     }
             }

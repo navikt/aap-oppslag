@@ -9,9 +9,7 @@ import oppslag.auth.authToken
 import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.behandler.RegistrertBehandler
 import java.util.UUID
-import oppslag.SECURE_LOGGER
 import oppslag.LOGGER
-import oppslag.auth.personident
 
 fun Route.behandlerRoute(behandler: BehandlerClient) {
     route("/fastlege") {
@@ -22,8 +20,7 @@ fun Route.behandlerRoute(behandler: BehandlerClient) {
                 .map { it.tilBehandler() }
 
             if (behandlersvar.size > 1) {
-                SECURE_LOGGER.warn("Dette var rart, fant fler fastleger for bruker ${call.personident()} :wtf:")
-                LOGGER.warn("Dette var rart, fant fler fastleger for bruker, sjekk securelogs for mer info")
+                LOGGER.warn("Fant flere fastleger for bruker")
             }
 
             call.respond(HttpStatusCode.OK, behandlersvar)

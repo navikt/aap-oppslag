@@ -34,12 +34,7 @@ class PdlGraphQLClient(
         val token = azureTokenProvider.getClientCredentialToken()
 
         return query(token, PdlRequest.hentNavn(personident), callId).map {
-            val person =  it.data?.hentPerson ?: error("Fant ikke person $personident i PDL")
-            try {
-                person.toNavn()
-            } catch (e: Exception) {
-                error("Feil ved henting av navn for person $personident")
-            }
+            it.data?.hentPerson?.toNavn() ?: error("Fant ikke person i PDL")
         }
     }
 

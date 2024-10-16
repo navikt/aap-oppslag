@@ -5,7 +5,6 @@ plugins {
 }
 
 val ktorVersion = "2.3.11"
-val aapLibVersion = "3.7.145"
 
 application {
     mainClass.set("oppslag.AppKt")
@@ -30,6 +29,7 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.13.6")
+    implementation("io.prometheus:prometheus-metrics-core:1.2.1")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
     implementation("ch.qos.logback:logback-classic:1.5.6")

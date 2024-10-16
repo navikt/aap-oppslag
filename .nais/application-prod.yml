@@ -38,9 +38,9 @@ spec:
     enabled: true
     path: /actuator/metrics
   observability:
-    #    autoInstrumentation:
-    #      enabled: true
-    #      runtime: "java"
+    autoInstrumentation:
+      enabled: true
+      runtime: "java"
     logging:
       destinations:
         - id: elastic

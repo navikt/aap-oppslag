@@ -1,10 +1,10 @@
 plugins {
     kotlin("jvm") version "1.9.24"
-    id("io.ktor.plugin") version "2.3.11"
+    id("io.ktor.plugin") version "3.0.0"
     application
 }
 
-val ktorVersion = "2.3.11"
+val ktorVersion = "3.0.0"
 
 application {
     mainClass.set("oppslag.AppKt")

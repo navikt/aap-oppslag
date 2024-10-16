@@ -9,7 +9,8 @@ import oppslag.fakes.*
 class Fakes : AutoCloseable {
     val krr = embeddedServer(Netty, port = 0, module = Application::KrrFake).apply { start() }
     val tokenx = embeddedServer(Netty, port = 0, module = Application::TokenXFake).apply { start() }
-    val behandler = embeddedServer(Netty, port = 0, module = Application::BehandlerFake).apply { start() }
+    val behandler =
+        embeddedServer(Netty, port = 0, module = Application::BehandlerFake).apply { start() }
     val saf = embeddedServer(Netty, port = 0, module = Application::SafFake).apply { start() }
     val azure = embeddedServer(Netty, port = 0, module = Application::AzureAdFake).apply { start() }
     val pdl = embeddedServer(Netty, port = 0, module = Application::PdlFake).apply { start() }
@@ -24,4 +25,9 @@ class Fakes : AutoCloseable {
     }
 }
 
-fun NettyApplicationEngine.port() = runBlocking { resolvedConnectors() }.first { it.type == ConnectorType.HTTP }.port
+fun EmbeddedServer<*, *>.port(): Int {
+    return runBlocking {
+        this@port.engine.resolvedConnectors()
+    }.first { it.type == ConnectorType.HTTP }
+        .port
+}

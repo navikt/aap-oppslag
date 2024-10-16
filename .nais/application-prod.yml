@@ -37,10 +37,14 @@ spec:
   prometheus:
     enabled: true
     path: /actuator/metrics
-#  observability:
-#    autoInstrumentation:
-#      enabled: true
-#      runtime: "java"
+  observability:
+    #    autoInstrumentation:
+    #      enabled: true
+    #      runtime: "java"
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
   secureLogs:
     enabled: true
   env:

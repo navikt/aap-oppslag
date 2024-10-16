@@ -4,15 +4,15 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.prometheus.client.Summary
+import io.prometheus.metrics.core.metrics.Summary
 import kotlinx.coroutines.runBlocking
+import oppslag.BehandlerConfig
 import oppslag.auth.TokenXProviderConfig
 import oppslag.auth.TokenXTokenProvider
-import oppslag.BehandlerConfig
 import oppslag.http.HttpClientFactory
 
 private const val BEHANDLER_CLIENT_SECONDS_METRICNAME = "behandler_client_seconds"
-private val clientLatencyStats: Summary = Summary.build()
+private val clientLatencyStats = Summary.builder()
     .name(BEHANDLER_CLIENT_SECONDS_METRICNAME)
     .quantile(0.5, 0.05) // Add 50th percentile (= median) with 5% tolerated error
     .quantile(0.9, 0.01) // Add 90th percentile with 1% tolerated error

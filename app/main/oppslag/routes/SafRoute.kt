@@ -1,7 +1,6 @@
 package oppslag.routes
 
 import io.ktor.http.*
-import io.ktor.server.application.*
 import io.ktor.server.plugins.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
@@ -40,12 +39,14 @@ fun Route.safRoute(saf: SafClient) {
                     )
                     .toString()
             )
-            call.respondOutputStream {
-                filStream.copyTo(this)
+            filStream.use { strømmen ->
+                call.respondOutputStream {
+                    strømmen.copyTo(this)
+                }
             }
         }
 
-        get("/{journalpostid}/json"){
+        get("/{journalpostid}/json") {
             val token = call.authToken()
             val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }

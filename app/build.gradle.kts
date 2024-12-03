@@ -6,7 +6,7 @@ plugins {
     application
 }
 
-val ktorVersion = "3.0.0"
+val ktorVersion = "3.0.1"
 
 application {
     mainClass.set("oppslag.AppKt")
@@ -53,7 +53,7 @@ repositories {
 
 tasks.test {
     useJUnitPlatform()
-    maxParallelForks = Runtime.getRuntime().availableProcessors()
+    maxParallelForks = Runtime.getRuntime().availableProcessors() / 2
 }
 
 kotlin {

@@ -1,12 +1,12 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.0.21"
-    id("io.ktor.plugin") version "3.0.0"
+    kotlin("jvm") version "2.1.0"
+    id("io.ktor.plugin") version "3.0.2"
     application
 }
 
-val ktorVersion = "3.0.1"
+val ktorVersion = "3.0.2"
 
 application {
     mainClass.set("oppslag.AppKt")

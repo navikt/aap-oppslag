@@ -8,24 +8,25 @@ import io.ktor.server.routing.*
 import oppslag.auth.authToken
 import oppslag.auth.personident
 import oppslag.integrasjoner.saf.SafClient
+import java.util.UUID
 
 fun Route.safRoute(saf: SafClient) {
     route("/dokumenter") {
         get {
             val personIdent = call.personident()
-            val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
+            val callId = UUID.randomUUID().toString() //requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             call.respond(saf.hentDokumenter(personIdent, call.authToken(), callId))
         }
 
         get("/{journalpostid}") {
-            val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
+            val callId = UUID.randomUUID().toString() //requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
 
             call.respond(saf.hentJournalpostSomDokumenter(journalpostid, call.authToken(), callId))
         }
 
         get("/{journalpostid}/{dokumentid}") {
-            val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
+            val callId = UUID.randomUUID().toString() //requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
             val dokumentid = requireNotNull(call.parameters["dokumentid"]) { "dokumentid er ikke satt" }
             val filStream = saf.hentDokument(call.authToken(), journalpostid, dokumentid, callId)
@@ -48,7 +49,7 @@ fun Route.safRoute(saf: SafClient) {
 
         get("/{journalpostid}/json") {
             val token = call.authToken()
-            val callId = requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
+            val callId = UUID.randomUUID().toString() //requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
 
             call.response.header(

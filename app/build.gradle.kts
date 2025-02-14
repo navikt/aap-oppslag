@@ -39,10 +39,10 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.17.1")
     implementation("ch.qos.logback:logback-classic:1.5.6")
     implementation("net.logstash.logback:logstash-logback-encoder:7.4")
-    implementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.0.1")
 
     testImplementation(kotlin("test"))
-    testImplementation("com.nimbusds:nimbus-jose-jwt:9.37.3")
+    testImplementation("com.nimbusds:nimbus-jose-jwt:10.0.1")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 }
 

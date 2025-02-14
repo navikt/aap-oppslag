@@ -22,7 +22,7 @@ dependencies {
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     constraints {
-        implementation("io.netty:netty-common:4.1.115.Final")
+        implementation("io.netty:netty-common:4.1.118.Final")
     }
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
 

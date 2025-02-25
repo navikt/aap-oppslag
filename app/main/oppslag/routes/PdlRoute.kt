@@ -6,7 +6,6 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import oppslag.SECURE_LOGGER
 import oppslag.LOGGER
 import oppslag.auth.AZURE
 import oppslag.auth.TOKENX
@@ -33,8 +32,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                     }
                     .onFailure {
                         call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
-                        LOGGER.error("Feil ved henting av person, sjekk securelogs for mer info")
-                        SECURE_LOGGER.error("Feil ved henting av person", it)
+                        LOGGER.error("Feil ved henting av person", it)
                     }
             }
             get("/barn") {
@@ -45,8 +43,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                     call.respond(HttpStatusCode.OK, it)
                 }
                 barn.onFailure {
-                    SECURE_LOGGER.error("Feil ved henting av barn", it)
-                    LOGGER.error("Feil ved henting av barn, sjekk securelogs for mer info")
+                    LOGGER.error("Feil ved henting av barn", it)
                     call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
                 }
             }
@@ -63,8 +60,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                 pdl.hentNavn(personident, callId)
                     .onSuccess { call.respond(it) }
                     .onFailure {
-                        SECURE_LOGGER.error("Feil ved henting av navn", it)
-                        LOGGER.error("Feil ved henting av navn. Sjekk secure log for stacktrace")
+                        LOGGER.error("Feil ved henting av navn", it)
                         call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
                     }
             }

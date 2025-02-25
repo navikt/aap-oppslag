@@ -31,11 +31,10 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
 
-val SECURE_LOGGER: Logger = LoggerFactory.getLogger("secureLog")
 val LOGGER: Logger = LoggerFactory.getLogger("aap-oppslag")
 
 fun main() {
-    Thread.currentThread().setUncaughtExceptionHandler { _, e -> SECURE_LOGGER.error("Uhåndtert feil", e) }
+    Thread.currentThread().setUncaughtExceptionHandler { _, e -> LOGGER.error("Uhåndtert feil", e) }
     embeddedServer(Netty, port = 8080, module = Application::api).start(wait = true)
 }
 
@@ -70,18 +69,18 @@ fun Application.api(
 
     install(StatusPages) {
         exception<PdlException> { call, cause ->
-            SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
+            LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
             call.respondText(text = "Feil i PDL: ${cause.message}", status = HttpStatusCode.InternalServerError)
         }
         exception<SafException> { call, cause ->
-            SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
+            LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
             call.respondText(text = "${cause.message}", status = HttpStatusCode.InternalServerError)
         }
         exception<DokumentIkkeFunnet> { call, cause ->
             call.respondText(text = "${cause.message}", status = HttpStatusCode.NotFound)
         }
         exception<Throwable> { call, cause ->
-            SECURE_LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
+            LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
             call.respondText(text = "Feil i tjeneste: ${cause.message}", status = HttpStatusCode.InternalServerError)
         }
     }

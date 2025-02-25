@@ -4,8 +4,8 @@ import oppslag.integrasjoner.pdl.PdlRequest.Companion.hentBarnInfo
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import oppslag.LOGGER
 import oppslag.PdlConfig
-import oppslag.SECURE_LOGGER
 import oppslag.auth.AzureAdTokenProvider
 import oppslag.auth.AzureConfig
 import oppslag.auth.TokenXProviderConfig
@@ -22,7 +22,7 @@ class PdlGraphQLClient(
     private val azureTokenProvider = AzureAdTokenProvider(
         azureConfig,
         pdlConfig.scope
-    ).also { SECURE_LOGGER.info("azure scope: ${pdlConfig.scope}") }
+    )
 
     suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)

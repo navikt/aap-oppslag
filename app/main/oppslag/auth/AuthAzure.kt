@@ -7,7 +7,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.response.*
-import oppslag.SECURE_LOGGER
+import oppslag.LOGGER
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -26,22 +26,22 @@ fun Application.authentication(config: AzureConfig) {
                 val now = Date()
 
                 if (config.clientId !in cred.audience) {
-                    SECURE_LOGGER.warn("AzureAD validering feilet (clientId var ikke i audience: ${cred.audience}")
+                    LOGGER.warn("AzureAD validering feilet (clientId var ikke i audience: ${cred.audience}")
                     return@validate null
                 }
 
                 if (cred.expiresAt?.before(now) == true) {
-                    SECURE_LOGGER.warn("AzureAD validering feilet (expired at: ${cred.expiresAt})")
+                    LOGGER.warn("AzureAD validering feilet (expired at: ${cred.expiresAt})")
                     return@validate null
                 }
 
                 if (cred.notBefore?.after(now) == true) {
-                    SECURE_LOGGER.warn("AzureAD validering feilet (not valid yet, valid from: ${cred.notBefore})")
+                    LOGGER.warn("AzureAD validering feilet (not valid yet, valid from: ${cred.notBefore})")
                     return@validate null
                 }
 
                 if (cred.issuedAt?.after(cred.expiresAt ?: return@validate null) == true) {
-                    SECURE_LOGGER.warn("AzureAD validering feilet (issued after expiration: ${cred.issuedAt} )")
+                    LOGGER.warn("AzureAD validering feilet (issued after expiration: ${cred.issuedAt} )")
                     return@validate null
                 }
 

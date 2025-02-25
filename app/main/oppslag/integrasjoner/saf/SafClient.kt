@@ -6,7 +6,6 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.plugins.*
 import io.ktor.utils.io.jvm.javaio.*
-import oppslag.SECURE_LOGGER
 import oppslag.LOGGER
 import oppslag.auth.TokenXProviderConfig
 import oppslag.auth.TokenXTokenProvider

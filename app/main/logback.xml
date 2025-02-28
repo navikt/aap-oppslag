@@ -8,4 +8,5 @@
         <appender-ref ref="json"/>
     </root>
 
+    <include resource="logback-secure.xml"/>
 </configuration>

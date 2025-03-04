@@ -83,7 +83,7 @@ fun Application.api(
             call.respondText(text = "${cause.message}", status = HttpStatusCode.NotFound)
         }
         exception<Throwable> { call, cause ->
-            LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
+            LOGGER.error("Uhåndtert feil ved kall til '{}', cause: '{}'", call.request.local.uri, cause.message, cause)
             call.respondText(text = "Feil i tjeneste: ${cause.message}", status = HttpStatusCode.InternalServerError)
         }
     }

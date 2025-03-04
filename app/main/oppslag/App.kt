@@ -33,8 +33,6 @@ import org.slf4j.event.Level
 
 val LOGGER: Logger = LoggerFactory.getLogger("aap-oppslag")
 
-val secureLogger: Logger = LoggerFactory.getLogger("secureLogger")
-
 fun main() {
     Thread.currentThread().setUncaughtExceptionHandler { _, e -> LOGGER.error("Uhåndtert feil", e) }
     embeddedServer(Netty, port = 8080, module = Application::api).start(wait = true)
@@ -71,7 +69,6 @@ fun Application.api(
 
     install(StatusPages) {
         exception<PdlException> { call, cause ->
-            secureLogger.error("Test av sikkerlogger")
             LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
             call.respondText(text = "Feil i PDL: ${cause.message}", status = HttpStatusCode.InternalServerError)
         }

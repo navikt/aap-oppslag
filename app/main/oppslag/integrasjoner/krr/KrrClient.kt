@@ -1,10 +1,15 @@
 package oppslag.integrasjoner.krr
 
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.plugins.*
+import io.ktor.client.call.body
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import io.ktor.http.isSuccess
 import io.prometheus.metrics.core.metrics.Summary
 import kotlinx.coroutines.runBlocking
 import oppslag.KrrConfig
@@ -28,24 +33,28 @@ class KrrClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfi
     fun hentKontaktinformasjon(
         tokenXToken: String,
         personIdent: String,
-        callId: String?
+        callId: String?,
     ): KrrRespons =
         clientLatencyStats.startTimer().use {
             runBlocking {
                 val obotoken = tokenProvider.getOnBehalfOfToken(tokenXToken)
-                val response = httpClient.get("${krrConfig.baseUrl}/rest/v1/person") {
+                val response = httpClient.post("${krrConfig.baseUrl}/rest/v1/personer") {
+                    contentType(ContentType.Application.Json)
                     accept(ContentType.Application.Json)
                     header("Nav-Call-Id", callId)
-                    header("Nav-Personident", personIdent)
                     bearerAuth(obotoken)
+                    setBody(KrrRequest(listOf(personIdent)))
                 }
-                if (response.status.isSuccess() || response.status.value == 409) {
+
+                if (response.status.isSuccess()) {
                     response.body()
-                } else if (response.status.value == 404){
-                    throw NotFoundException()
                 } else {
                     error("Feil mot krr (${response.status}): ${response.bodyAsText()}")
                 }
             }
         }
 }
+
+internal data class KrrRequest(
+    val personidenter: List<String>,
+)

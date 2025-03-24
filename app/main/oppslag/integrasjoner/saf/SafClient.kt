@@ -77,7 +77,6 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         val respons = request.body<SafRespons>()
         if (respons.errors != null) {
             throw SafException("Feil mot SAF: ${respons.errors}")
-            LOGGER.error("Feil mot SAF ${respons.errors} for $callId")
         }
         return respons
     }

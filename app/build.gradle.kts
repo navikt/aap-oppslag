@@ -38,7 +38,7 @@ dependencies {
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.3")
     implementation("ch.qos.logback:logback-classic:1.5.18")
-    implementation("net.logstash.logback:logstash-logback-encoder:8.0")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("com.nimbusds:nimbus-jose-jwt:10.1")
 
     testImplementation(kotlin("test"))

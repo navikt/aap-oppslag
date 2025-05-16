@@ -3,12 +3,12 @@ package oppslag.http
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.plugins.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.serialization.jackson.*
-
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.HttpRequestRetry
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.jackson.jackson
 
 
 internal object HttpClientFactory {
@@ -25,6 +25,10 @@ internal object HttpClientFactory {
                 disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
                 registerModule(JavaTimeModule())
             }
+        }
+        install(HttpRequestRetry) {
+            retryOnServerErrors(maxRetries = 2)
+            exponentialDelay()
         }
     }
 }

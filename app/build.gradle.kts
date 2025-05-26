@@ -34,7 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.15.0")
-    implementation("io.prometheus:prometheus-metrics-core:1.3.7")
+    implementation("io.prometheus:prometheus-metrics-core:1.3.8")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.0")
     implementation("ch.qos.logback:logback-classic:1.5.18")

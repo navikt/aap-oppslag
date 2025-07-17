@@ -6,7 +6,7 @@ plugins {
     application
 }
 
-val ktorVersion = "3.2.1"
+val ktorVersion = "3.2.2"
 
 application {
     mainClass.set("oppslag.AppKt")

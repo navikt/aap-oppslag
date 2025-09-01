@@ -36,7 +36,7 @@ dependencies {
     implementation("io.micrometer:micrometer-registry-prometheus:1.15.3")
     implementation("io.prometheus:prometheus-metrics-core:1.3.10")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.19.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.0")
     implementation("ch.qos.logback:logback-classic:1.5.18")
     implementation("net.logstash.logback:logstash-logback-encoder:8.1")
     implementation("com.nimbusds:nimbus-jose-jwt:10.4.1")

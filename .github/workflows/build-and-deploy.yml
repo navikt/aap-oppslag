@@ -46,7 +46,9 @@ jobs:
     permissions:
       contents: read
       id-token: write
-    needs: gradle
+    needs:
+       - gradle
+       - dev
     uses: navikt/aap-workflows/.github/workflows/deploy.yml@main
     secrets: inherit
     with:

@@ -36,6 +36,7 @@ private val barnRelasjon = """
     query($ident: ID!) {
         hentPerson(ident: $ident) {
             forelderBarnRelasjon {
+                relatertPersonsRolle
                 relatertPersonsIdent
             }
         }

@@ -1,13 +1,8 @@
 package oppslag.integrasjoner.pdl
 
-import io.ktor.client.call.body
-import io.ktor.client.request.accept
-import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import oppslag.PdlConfig
 import oppslag.auth.AzureAdTokenProvider
 import oppslag.auth.AzureConfig
@@ -28,7 +23,11 @@ class PdlGraphQLClient(
         pdlConfig.scope
     )
 
-    suspend fun hentPerson(personident: String, tokenXToken: String, callId: String): Result<Søker?> {
+    suspend fun hentPerson(
+        personident: String,
+        tokenXToken: String,
+        callId: String
+    ): Result<Søker?> {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
         val res = query(token, PdlRequest.hentPerson(personident), callId)
         return res.map { it.data?.hentPerson?.toSøker() }
@@ -42,11 +41,12 @@ class PdlGraphQLClient(
         }
     }
 
-    suspend fun hentBarn(personident: String, tokenXToken: String, callId: String): Result<List<Barn>> {
+    suspend fun hentBarn(
+        personident: String,
+        tokenXToken: String,
+        callId: String
+    ): Result<List<Barn>> {
         val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, tokenXToken, callId)
-            .map {
-                it ?: emptyList()
-            }
 
         return maybeRelatertPersonIdenter.map { personIdenter ->
             if (personIdenter.isEmpty()) {
@@ -67,16 +67,23 @@ class PdlGraphQLClient(
         personident: String,
         tokenXToken: String,
         callId: String
-    ): Result<List<String>?> {
+    ): Result<List<String>> {
         val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
         return query(
             token,
             PdlRequest.hentBarnRelasjon(personident),
             callId
-        ).map { it.data?.hentPerson?.forelderBarnRelasjon?.mapNotNull { rel -> rel.relatertPersonsIdent } }
+        ).map {
+            it.data?.hentPerson?.forelderBarnRelasjon.orEmpty()
+                .filter { it.relatertPersonsRolle == ForelderBarnRelasjonRolle.BARN }
+                .mapNotNull { rel -> rel.relatertPersonsIdent }
+        }
     }
 
-    private suspend fun hentBarnBolk(personIdenter: List<String>, callId: String): Result<List<PdlPerson>> {
+    private suspend fun hentBarnBolk(
+        personIdenter: List<String>,
+        callId: String
+    ): Result<List<PdlPerson>> {
         val azureToken = azureTokenProvider.getClientCredentialToken()
         return query(azureToken, hentBarnInfo(personIdenter), callId)
             .map {
@@ -97,12 +104,16 @@ class PdlGraphQLClient(
             }
     }
 
-    private suspend fun query(accessToken: String, query: PdlRequest, callId: String): Result<PdlResponse> {
+    private suspend fun query(
+        accessToken: String,
+        query: PdlRequest,
+        callId: String
+    ): Result<PdlResponse> {
         val request = httpClient.post(pdlConfig.baseUrl) {
             accept(ContentType.Application.Json)
             header("Nav-Call-Id", callId)
             header("TEMA", "AAP")
-            header("Behandlingsnummer","B287")
+            header("Behandlingsnummer", "B287")
             bearerAuth(accessToken)
             contentType(ContentType.Application.Json)
             setBody(query)

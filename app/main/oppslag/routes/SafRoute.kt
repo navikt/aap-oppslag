@@ -2,13 +2,12 @@ package oppslag.routes
 
 import io.ktor.http.*
 import io.ktor.server.plugins.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import oppslag.auth.authToken
 import oppslag.auth.personident
 import oppslag.integrasjoner.saf.SafClient
-import java.util.UUID
+import java.util.*
 
 fun Route.safRoute(saf: SafClient) {
     route("/dokumenter") {

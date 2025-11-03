@@ -15,7 +15,7 @@ import java.util.*
 internal class TokenXGen(private val config: TokenXProviderConfig) {
 
     companion object {
-        public val rsaKey: RSAKey get() = JWKSet.parse(TOKEN_X_JWKS).getKeyByKeyId("localhost-signer") as RSAKey
+        val rsaKey: RSAKey get() = JWKSet.parse(TOKEN_X_JWKS).getKeyByKeyId("localhost-signer") as RSAKey
     }
 
 
@@ -37,7 +37,7 @@ internal class TokenXGen(private val config: TokenXProviderConfig) {
 }
 
 @Language("JSON")
-public const val TOKEN_X_JWKS: String = """{
+const val TOKEN_X_JWKS: String = """{
     "keys": [
         {
             "kty": "RSA",

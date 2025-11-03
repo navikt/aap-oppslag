@@ -19,16 +19,9 @@ class AzureAdTokenProvider(
     private val scope: String,
     private val client: HttpClient = defaultHttpClient,
 ) {
-    suspend fun getUsernamePasswordToken(username: String, password: String) = getAccessToken(username) {
-        "client_id=${config.clientId}&client_secret=${config.clientSecret}&scope=$scope&username=$username&password=$password&grant_type=password"
-    }
 
     suspend fun getClientCredentialToken() = getAccessToken(scope) {
         "client_id=${config.clientId}&client_secret=${config.clientSecret}&scope=$scope&grant_type=client_credentials"
-    }
-
-    suspend fun getOnBehalfOfToken(accessToken: String) = getAccessToken(scope) {
-        "client_id=${config.clientId}&client_secret=${config.clientSecret}&assertion=$accessToken&scope=$scope&grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&requested_token_use=on_behalf_of"
     }
 
     private val cache = TokenCache()

@@ -6,8 +6,6 @@ import java.net.URI
 
 internal object TestConfig {
 
-    val key = TokenXGen.rsaKey
-
     fun default(fakes: Fakes): Config {
         return Config(
             tokenx = TokenXProviderConfig(

@@ -20,7 +20,7 @@ internal data class HentPersonBolkResult(
     val ident: String,
     val person: PdlPerson?,
     val code: String,
-    )
+)
 
 internal data class PdlPerson(
     val adressebeskyttelse: List<Adressebeskyttelse>?,
@@ -34,7 +34,7 @@ internal data class PdlPerson(
 )
 
 internal data class PDLDødsfall(
-    @JsonProperty("doedsdato") val dødsdato: LocalDate
+    @param:JsonProperty("doedsdato") val dødsdato: LocalDate
 )
 
 internal enum class Code {
@@ -42,8 +42,16 @@ internal enum class Code {
 }
 
 internal data class PdlForelderBarnRelasjon(
-    val relatertPersonsIdent: String?
+    val relatertPersonsIdent: String?,
+    val relatertPersonsRolle: ForelderBarnRelasjonRolle
 )
+
+enum class ForelderBarnRelasjonRolle {
+    BARN,
+    FAR,
+    MEDMOR,
+    MOR,
+}
 
 internal data class PdlFoedsel(
     val foedselsdato: String?

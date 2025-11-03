@@ -15,7 +15,6 @@ import oppslag.api
 import oppslag.integrasjoner.saf.Dokument
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.time.LocalDateTime
 import java.util.*
 
 class SafTest {

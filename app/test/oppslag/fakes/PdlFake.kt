@@ -123,13 +123,16 @@ fun Application.PdlFake() {
                             "hentPerson": {
                                 "forelderBarnRelasjon": [
                                     {
-                                        "relatertPersonsIdent": "12345678910"
+                                        "relatertPersonsIdent": "12345678910",
+                                        "relatertPersonsRolle": "BARN"
                                     },
                                     {
-                                        "relatertPersonsIdent": "12345678911"
+                                        "relatertPersonsIdent": "12345678911",
+                                        "relatertPersonsRolle": "BARN"
                                     },
                                     {
-                                        "relatertPersonsIdent": "12345678912"
+                                        "relatertPersonsIdent": "12345678912",
+                                        "relatertPersonsRolle": "BARN"
                                     }
                                 ]
                             }

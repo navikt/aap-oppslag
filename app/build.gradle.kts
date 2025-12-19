@@ -1,7 +1,7 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
     id("io.ktor.plugin") version "3.3.3"
     application
 }
@@ -22,7 +22,7 @@ dependencies {
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     constraints {
-        implementation("io.netty:netty-common:4.2.8.Final")
+        implementation("io.netty:netty-common:4.2.9.Final")
     }
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
 

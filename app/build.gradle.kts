@@ -37,12 +37,12 @@ dependencies {
     implementation("io.prometheus:prometheus-metrics-core:1.4.3")
     implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.20.1")
-    implementation("ch.qos.logback:logback-classic:1.5.23")
+    implementation("ch.qos.logback:logback-classic:1.5.24")
     implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-    implementation("com.nimbusds:nimbus-jose-jwt:10.6")
+    implementation("com.nimbusds:nimbus-jose-jwt:10.7")
 
     testImplementation(kotlin("test"))
-    testImplementation("com.nimbusds:nimbus-jose-jwt:10.6")
+    testImplementation("com.nimbusds:nimbus-jose-jwt:10.7")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 }
 

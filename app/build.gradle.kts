@@ -1,7 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm")
+    id("aap.conventions")
     id("io.ktor.plugin") version "3.3.3"
     application
 }
@@ -45,25 +44,3 @@ dependencies {
     testImplementation("com.nimbusds:nimbus-jose-jwt:10.6")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 }
-
-repositories {
-    mavenCentral()
-    maven("https://github-package-registry-mirror.gc.nav.no/cached/maven-release")
-}
-
-tasks.test {
-    useJUnitPlatform()
-    maxParallelForks = Runtime.getRuntime().availableProcessors() / 2
-}
-
-kotlin {
-    jvmToolchain(21)
-    compilerOptions {
-        jvmTarget.set(JvmTarget.JVM_21)
-    }
-}
-
-kotlin.sourceSets["main"].kotlin.srcDirs("main")
-kotlin.sourceSets["test"].kotlin.srcDirs("test")
-sourceSets["main"].resources.srcDirs("main")
-sourceSets["test"].resources.srcDirs("test")

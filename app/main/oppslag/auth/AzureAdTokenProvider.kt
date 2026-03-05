@@ -12,7 +12,7 @@ import io.ktor.http.*
 import io.ktor.serialization.jackson.*
 import org.slf4j.LoggerFactory
 
-private val secureLog = LoggerFactory.getLogger("secureLog")
+private val secureLog = LoggerFactory.getLogger("team-logs")
 
 class AzureAdTokenProvider(
     private val config: AzureConfig,

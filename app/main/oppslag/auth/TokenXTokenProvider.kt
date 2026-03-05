@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory
 import java.time.Instant
 import java.util.*
 
-private val secureLog = LoggerFactory.getLogger("secureLog")
+private val secureLog = LoggerFactory.getLogger("team-logs")
 class TokenXTokenProvider(
     private val config: TokenXProviderConfig,
     private val audience: String,

@@ -45,8 +45,6 @@ spec:
       destinations:
         - id: elastic
         - id: loki
-  secureLogs:
-    enabled: true
   env:
     - name: PDL_BASE_URL
       value: https://pdl-api.prod-fss-pub.nais.io/graphql

@@ -5,7 +5,7 @@ plugins {
     application
 }
 
-val ktorVersion = "3.4.1"
+val ktorVersion = "3.4.2"
 
 application {
     mainClass.set("oppslag.AppKt")
@@ -21,7 +21,7 @@ dependencies {
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     constraints {
-        implementation("io.netty:netty-common:4.2.10.Final")
+        implementation("io.netty:netty-common:4.2.12.Final")
     }
     implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
 

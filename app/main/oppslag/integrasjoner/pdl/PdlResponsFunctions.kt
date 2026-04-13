@@ -5,6 +5,8 @@ import java.time.LocalDate
 internal fun PdlPerson.toSøker(): Søker {
     val adresse = bostedsadresse?.firstOrNull()?.vegadresse?.adresse()
     val fødselsdato = foedselsdato?.firstOrNull()?.foedselsdato?.let { LocalDate.parse(it) }
+    val erUnderAttenÅr = fødselsdato != null && LocalDate.now().minusYears(18).isBefore(fødselsdato)
+
     return Søker(
         navn = this.fulltNavn() ?: "",
         fnr = fnr ?: "",
@@ -12,7 +14,8 @@ internal fun PdlPerson.toSøker(): Søker {
             it.gradering in listOf("FORTROLIG", "STRENGT_FORTROLIG_UTLAND", "STRENGT_FORTROLIG")
         } == true,
         adresse = adresse,
-        fødseldato = fødselsdato
+        fødseldato = fødselsdato,
+        erUnderAttenÅr = erUnderAttenÅr
     )
 }
 

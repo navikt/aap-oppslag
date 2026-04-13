@@ -9,7 +9,8 @@ data class Søker(
     @JsonIgnore
     val erBeskyttet: Boolean,
     val adresse: String? = null,
-    val fødseldato: LocalDate? = null
+    val fødseldato: LocalDate? = null,
+    val erUnderAttenÅr: Boolean
 )
 
 data class Navn(

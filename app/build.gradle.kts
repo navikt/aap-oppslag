@@ -1,11 +1,11 @@
 plugins {
     kotlin("jvm")
     id("aap.conventions")
-    id("io.ktor.plugin") version "3.4.2"
+    id("io.ktor.plugin") version "3.4.3"
     application
 }
 
-val ktorVersion = "3.4.2"
+val ktorVersion = "3.4.3"
 
 application {
     mainClass.set("oppslag.AppKt")

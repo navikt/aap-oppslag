@@ -21,7 +21,10 @@ fun Application.SafFake() {
 
     routing {
         get("/rest/hentdokument/400000000/23423535/{arkivtype}"){
-            call.respondBytes(MINIMAL_PDF, ContentType.Application.Pdf)
+            when (call.parameters["arkivtype"]) {
+                "ORIGINAL" -> call.respondText("{}", ContentType.Application.Json)
+                else -> call.respondBytes(MINIMAL_PDF, ContentType.Application.Pdf)
+            }
         }
 
         post("/graphql"){

@@ -3,6 +3,8 @@ package oppslag
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.http.*
+import io.ktor.openapi.OpenApiDoc
+import io.ktor.openapi.OpenApiInfo
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -15,6 +17,13 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.routing.openapi.hide
+import io.ktor.server.routing.openapi.plus
+import io.ktor.server.application.plugin
+import io.ktor.server.routing.RoutingRoot
+import io.ktor.server.routing.getAllRoutes
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import oppslag.auth.TOKENX
@@ -90,12 +99,24 @@ fun Application.api(
     }
 
     routing {
+        route("/openapi.json") {
+            get {
+                val allRoutes = call.application.plugin(RoutingRoot.Plugin).getAllRoutes()
+                val spec = OpenApiDoc.build {
+                    info = OpenApiInfo(title = "aap-oppslag", version = "1.0")
+                } + allRoutes
+                call.respondText(
+                    Json { prettyPrint = true }.encodeToString(OpenApiDoc.serializer(), spec),
+                    ContentType.Application.Json
+                )
+            }
+        }.hide()
         route("/test/local-token") {
             get {
                 val token = TokenXGen(config.tokenx).generate("08486725851")
                 call.respond(token)
             }
-        }
+        }.hide()
 
         authenticate(TOKENX) {
             behandlerRoute(behandler)

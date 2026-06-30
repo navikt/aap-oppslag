@@ -1,5 +1,6 @@
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization")
     id("aap.conventions")
     id("io.ktor.plugin") version "3.5.1"
     application
@@ -31,6 +32,7 @@ dependencies {
     implementation("io.ktor:ktor-client-jackson:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
+    implementation ("io.ktor:ktor-server-routing-openapi:${ktorVersion}")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.17.0")
     implementation("io.prometheus:prometheus-metrics-core:1.8.0")
@@ -43,4 +45,12 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+}
+
+ktor {
+    openApi {
+        enabled = true
+        codeInferenceEnabled = true
+        onlyCommented = false
+    }
 }

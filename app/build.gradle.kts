@@ -43,7 +43,6 @@ dependencies {
     implementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
 
     testImplementation(kotlin("test"))
-    testImplementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
 }
 

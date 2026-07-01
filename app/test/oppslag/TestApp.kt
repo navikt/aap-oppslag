@@ -1,10 +1,11 @@
+@file:OptIn(ExperimentalKtorApi::class)
+
 package oppslag
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.http.*
-import io.ktor.openapi.OpenApiDoc
-import io.ktor.openapi.OpenApiInfo
+import io.ktor.openapi.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -17,15 +18,11 @@ import io.ktor.server.plugins.statuspages.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.server.routing.openapi.hide
-import io.ktor.server.routing.openapi.plus
-import io.ktor.server.application.plugin
-import io.ktor.server.routing.RoutingRoot
-import io.ktor.server.routing.getAllRoutes
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+import io.ktor.server.routing.openapi.*
+import io.ktor.utils.io.ExperimentalKtorApi
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
+import kotlinx.serialization.json.Json
 import oppslag.auth.TOKENX
 import oppslag.auth.authentication
 import oppslag.integrasjoner.behandler.BehandlerClient
@@ -35,7 +32,11 @@ import oppslag.integrasjoner.pdl.PdlGraphQLClient
 import oppslag.integrasjoner.saf.DokumentIkkeFunnet
 import oppslag.integrasjoner.saf.SafClient
 import oppslag.integrasjoner.saf.SafException
-import oppslag.routes.*
+import oppslag.routes.actuator
+import oppslag.routes.behandlerRoute
+import oppslag.routes.krrRoute
+import oppslag.routes.pdlRoute
+import oppslag.routes.safRoute
 import org.slf4j.event.Level
 
 fun main() {
@@ -44,8 +45,10 @@ fun main() {
     embeddedServer(Netty, port = 8082, module = Application::api).start(wait = true)
 }
 
+private val json = Json { prettyPrint = true }
+
 fun Application.api(
-    config: Config = oppslag.TestConfig.default(Fakes()),
+    config: Config = TestConfig.default(Fakes()),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     val pdl = PdlGraphQLClient(config.tokenx, config.azureConfig, config.pdlConfig)
@@ -106,7 +109,7 @@ fun Application.api(
                     info = OpenApiInfo(title = "aap-oppslag", version = "1.0")
                 } + allRoutes
                 call.respondText(
-                    Json { prettyPrint = true }.encodeToString(OpenApiDoc.serializer(), spec),
+                    json.encodeToString(OpenApiDoc.serializer(), spec),
                     ContentType.Application.Json
                 )
             }

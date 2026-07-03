@@ -2,48 +2,49 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.serialization")
     id("aap.conventions")
-    id("io.ktor.plugin") version "3.5.1"
+    alias(libs.plugins.ktor)
     application
 }
-
-val ktorVersion = "3.5.1"
 
 application {
     mainClass.set("oppslag.AppKt")
 }
 
 dependencies {
-    implementation("io.ktor:ktor-server-auth:$ktorVersion")
-    implementation("io.ktor:ktor-server-auth-jwt:$ktorVersion")
-    implementation("io.ktor:ktor-server-call-logging:$ktorVersion")
-    implementation("io.ktor:ktor-server-call-logging-jvm:$ktorVersion")
-    implementation("io.ktor:ktor-server-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-server-core:$ktorVersion")
-    implementation("io.ktor:ktor-server-metrics-micrometer:$ktorVersion")
-    implementation("io.ktor:ktor-server-netty:$ktorVersion")
+    implementation(libs.ktorServerAuth)
+    implementation(libs.ktorServerAuthJwt)
+    implementation(libs.ktorServerCallLogging)
+    implementation(libs.ktorServerCallLoggingJvm)
+    implementation(libs.ktorServerContentNegotiation)
+    implementation(libs.ktorServerCore)
+    implementation(libs.ktorServerMetricsMicrometer)
+    implementation(libs.ktorServerNetty)
     constraints {
-        implementation("io.netty:netty-common:4.2.15.Final")
+        implementation(libs.nettyCommon)
+        // CVE-2026-54512
+        implementation(libs.jacksonCore3)
+        implementation(libs.jacksonDatabind3)
     }
-    implementation("io.ktor:ktor-server-status-pages:$ktorVersion")
+    implementation(libs.ktorServerStatusPages)
 
-    implementation("io.ktor:ktor-client-auth:$ktorVersion")
-    implementation("io.ktor:ktor-client-cio:$ktorVersion")
-    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
-    implementation("io.ktor:ktor-client-jackson:$ktorVersion")
-    implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-logging:$ktorVersion")
-    implementation ("io.ktor:ktor-server-routing-openapi:${ktorVersion}")
+    implementation(libs.ktorClientAuth)
+    implementation(libs.ktorClientCio)
+    implementation(libs.ktorClientContentNegotiation)
+    implementation(libs.ktorClientJackson)
+    implementation(libs.ktorClientCore)
+    implementation(libs.ktorClientLogging)
+    implementation(libs.ktorServerRoutingOpenapi)
 
-    implementation("io.micrometer:micrometer-registry-prometheus:1.17.0")
-    implementation("io.prometheus:prometheus-metrics-core:1.8.0")
-    implementation("io.ktor:ktor-serialization-jackson:$ktorVersion")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.22.0")
-    implementation("ch.qos.logback:logback-classic:1.5.37")
-    implementation("net.logstash.logback:logstash-logback-encoder:9.0")
-    implementation("com.nimbusds:nimbus-jose-jwt:10.9.1")
+    implementation(libs.micrometerRegistryPrometheus)
+    implementation(libs.prometheusMetricsCore)
+    implementation(libs.ktorSerializationJackson)
+    implementation(libs.jacksonDatatypeJsr310)
+    implementation(libs.logbackClassic)
+    implementation(libs.logstashLogbackEncoder)
+    implementation(libs.nimbusJoseJwt)
 
     testImplementation(kotlin("test"))
-    testImplementation("io.ktor:ktor-server-test-host:$ktorVersion")
+    testImplementation(libs.ktorServerTestHost)
 }
 
 ktor {

@@ -7,7 +7,7 @@ prometheus = "1.8.0"
 jackson = "2.22.0"
 jackson3 = "3.2.0"
 nimbusJoseJwt = "10.9.1"
-netty = "4.2.15.Final"
+netty = "4.2.16.Final"
 
 [libraries]
 # Ktor server

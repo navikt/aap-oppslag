@@ -1,13 +1,13 @@
 [versions]
 ktor = "3.5.1"
-logback = "1.5.37"
+logback = "1.5.38"
 logstash = "9.0"
 micrometer = "1.17.0"
 prometheus = "1.8.0"
-jackson = "2.22.0"
-jackson3 = "3.2.0"
+jackson = "2.22.1"
+jackson3 = "3.2.1"
 nimbusJoseJwt = "10.9.1"
-netty = "4.2.15.Final"
+netty = "4.2.16.Final"
 
 [libraries]
 # Ktor server

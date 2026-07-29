@@ -5,6 +5,7 @@
 .idea
 .idea/*
 .idea/**
+.kotlin/
 
 out
 
@@ -28,7 +29,6 @@ gradle-app.setting
 
 # Ignore Gradle build output directory
 build
-.idea
 
 # generert openapi spec
 openapi.json

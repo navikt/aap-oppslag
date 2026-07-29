@@ -8,19 +8,19 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.testing.testApplication
-import oppslag.Fakes
 import oppslag.TestConfig
 import oppslag.TokenXGen
+import oppslag.WithFakes
 import oppslag.api
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 
+@WithFakes
 class BehandlerTest {
     @Test
     fun `Dummy test`() {
-        Fakes().use { fakes ->
             testApplication {
-                val config = TestConfig.default(fakes)
+                val config = TestConfig.default()
                 
                 application { 
                     api(config) 
@@ -38,7 +38,6 @@ class BehandlerTest {
                 }
 
                 Assertions.assertEquals(HttpStatusCode.OK, res.status)
-            }
         }
     }
 }

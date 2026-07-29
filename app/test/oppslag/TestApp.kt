@@ -60,7 +60,7 @@ fun main() {
 private val json = Json { prettyPrint = true }
 
 fun Application.api(
-    config: Config = TestConfig.default(Fakes()),
+    config: Config = TestConfig.default(),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     val pdl = PdlGraphQLClient(config.pdlConfig)

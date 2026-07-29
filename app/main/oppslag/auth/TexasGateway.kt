@@ -10,8 +10,10 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import no.nav.aap.komponenter.server.auth.IdentityProvider
 import oppslag.getEnvVar
 
-
-class TexasGateway(private val httpClient: HttpClient) : ITokenProvider {
+class TexasGateway(
+    private val identityProvider: IdentityProvider,
+    private val httpClient: HttpClient,
+) : ITokenProvider {
     private val texasTokenEndpoint by lazy { getEnvVar("NAIS_TOKEN_ENDPOINT") }
     private val texasExchangeEndpoint by lazy { getEnvVar("NAIS_TOKEN_EXCHANGE_ENDPOINT") }
 
@@ -20,7 +22,7 @@ class TexasGateway(private val httpClient: HttpClient) : ITokenProvider {
             contentType(ContentType.Application.Json)
             setBody(
                 mapOf(
-                    "identity_provider" to IdentityProvider.TOKENX.value,
+                    "identity_provider" to identityProvider.value,
                     "target" to scope
                 )
             )
@@ -32,7 +34,7 @@ class TexasGateway(private val httpClient: HttpClient) : ITokenProvider {
             contentType(ContentType.Application.Json)
             setBody(
                 mapOf(
-                    "identity_provider" to IdentityProvider.TOKENX.value,
+                    "identity_provider" to identityProvider.value,
                     "target" to scope,
                     "user_token" to currentToken.token()
                 )

@@ -4,27 +4,39 @@ package oppslag
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.http.*
-import io.ktor.openapi.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.engine.*
-import io.ktor.server.metrics.micrometer.*
-import io.ktor.server.netty.*
-import io.ktor.server.plugins.calllogging.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import io.ktor.server.routing.openapi.*
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.openapi.OpenApiDoc
+import io.ktor.openapi.OpenApiInfo
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.application.plugin
+import io.ktor.server.auth.authenticate
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.metrics.micrometer.MicrometerMetrics
+import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.calllogging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.header
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.path
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.RoutingRoot
+import io.ktor.server.routing.get
+import io.ktor.server.routing.getAllRoutes
+import io.ktor.server.routing.openapi.hide
+import io.ktor.server.routing.openapi.plus
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import io.ktor.utils.io.ExperimentalKtorApi
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import kotlinx.serialization.json.Json
-import oppslag.auth.TOKENX
-import oppslag.auth.authentication
+import no.nav.aap.komponenter.server.auth.IdentityProvider
+import no.nav.aap.komponenter.server.authentication
 import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.krr.KrrClient
 import oppslag.integrasjoner.pdl.PdlException
@@ -51,15 +63,14 @@ fun Application.api(
     config: Config = TestConfig.default(Fakes()),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-    val pdl = PdlGraphQLClient(config.tokenx, config.azureConfig, config.pdlConfig)
-    val krr = KrrClient(config.tokenx, config.krrConfig)
-    val behandler = BehandlerClient(config.tokenx, config.behandlerConfig)
-    val saf = SafClient(config.tokenx, config.safConfig)
+    val pdl = PdlGraphQLClient(config.pdlConfig)
+    val krr = KrrClient(config.krrConfig)
+    val behandler = BehandlerClient(config.behandlerConfig)
+    val saf = SafClient(config.safConfig)
 
     install(MicrometerMetrics) { registry = prometheus }
 
-    authentication(config.tokenx)
-    authentication(config.azureConfig)
+    authentication(listOf(IdentityProvider.ENTRA_ID, IdentityProvider.TOKENX))
 
     install(CallLogging) {
         level = Level.INFO
@@ -116,12 +127,12 @@ fun Application.api(
         }.hide()
         route("/test/local-token") {
             get {
-                val token = TokenXGen(config.tokenx).generate("08486725851")
+                val token = TokenXGen.generate("08486725851")
                 call.respond(token)
             }
         }.hide()
 
-        authenticate(TOKENX) {
+        authenticate(IdentityProvider.TOKENX.value) {
             behandlerRoute(behandler)
             krrRoute(krr)
             safRoute(saf)

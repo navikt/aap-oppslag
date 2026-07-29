@@ -29,9 +29,8 @@ class PdlTest {
                         jackson()
                     } }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/person") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     header("Nav-CallId", UUID.randomUUID())
                     accept(ContentType.Application.Json)
                 }
@@ -54,9 +53,8 @@ class PdlTest {
                         }
                     } }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/person/barn") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     header("Nav-CallId", UUID.randomUUID())
                     accept(ContentType.Application.Json)
                 }

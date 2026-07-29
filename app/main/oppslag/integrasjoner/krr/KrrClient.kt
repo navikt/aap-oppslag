@@ -12,8 +12,8 @@ import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.prometheus.metrics.core.metrics.Summary
 import kotlinx.coroutines.runBlocking
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.KrrConfig
-import oppslag.auth.TokenXProviderConfig
 import oppslag.auth.TokenXTokenProvider
 import oppslag.http.HttpClientFactory
 
@@ -26,18 +26,17 @@ private val clientLatencyStats: Summary = Summary.builder()
     .help("Latency krr, in seconds")
     .register()
 
-class KrrClient(tokenXProviderConfig: TokenXProviderConfig, private val krrConfig: KrrConfig) {
+class KrrClient(private val krrConfig: KrrConfig) {
     private val httpClient = HttpClientFactory.create()
-    private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, krrConfig.scope, httpClient)
 
     fun hentKontaktinformasjon(
-        tokenXToken: String,
+        oidcToken: OidcToken,
         personIdent: String,
-        callId: String?,
+        callId: String,
     ): KrrRespons =
         clientLatencyStats.startTimer().use {
             runBlocking {
-                val obotoken = tokenProvider.getOnBehalfOfToken(tokenXToken)
+                val obotoken = TokenXTokenProvider.oboToken(krrConfig.scope, oidcToken)
                 val response = httpClient.post("${krrConfig.baseUrl}/rest/v1/personer") {
                     contentType(ContentType.Application.Json)
                     accept(ContentType.Application.Json)

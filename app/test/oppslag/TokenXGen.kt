@@ -8,16 +8,11 @@ import com.nimbusds.jose.jwk.JWKSet
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.JWTClaimsSet
 import com.nimbusds.jwt.SignedJWT
-import oppslag.auth.TokenXProviderConfig
+import java.util.Date
 import org.intellij.lang.annotations.Language
-import java.util.*
 
-internal class TokenXGen(private val config: TokenXProviderConfig) {
-
-    companion object {
-        val rsaKey: RSAKey get() = JWKSet.parse(TOKEN_X_JWKS).getKeyByKeyId("localhost-signer") as RSAKey
-    }
-
+object TokenXGen {
+    private val rsaKey: RSAKey get() = JWKSet.parse(TOKEN_X_JWKS).getKeyByKeyId("localhost-signer") as RSAKey
 
     private fun signed(claims: JWTClaimsSet): SignedJWT {
         val header = JWSHeader.Builder(JWSAlgorithm.RS256).keyID(rsaKey.keyID).type(JOSEObjectType.JWT).build()
@@ -27,8 +22,8 @@ internal class TokenXGen(private val config: TokenXProviderConfig) {
 
     private fun claims(personident: String = "12345678910") = JWTClaimsSet
         .Builder()
-        .issuer(config.issuer)
-        .audience(config.clientId)
+        .issuer("test-issuer")
+        .audience("test-client-id")
         .expirationTime(Date(Date().time + 60 * 60 * 3600))
         .claim("pid", personident)
         .build()

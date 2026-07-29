@@ -22,9 +22,8 @@ class KrrTest {
                         jackson()
                     } }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/krr") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     accept(ContentType.Application.Json)
                 }
 

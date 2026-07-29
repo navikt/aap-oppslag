@@ -1,10 +1,13 @@
 package oppslag.routes
 
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.testing.*
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.testing.testApplication
 import oppslag.Fakes
 import oppslag.TestConfig
 import oppslag.TokenXGen
@@ -29,10 +32,8 @@ class BehandlerTest {
                     } 
                 }
 
-                val tokenXGen = TokenXGen(config.tokenx)
-                
                 val res = client.get("/fastlege") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     accept(ContentType.Application.Json)
                 }
 

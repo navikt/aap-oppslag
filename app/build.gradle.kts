@@ -11,6 +11,8 @@ application {
 }
 
 dependencies {
+    implementation(libs.kelvin.server)
+
     implementation(libs.ktorServerAuth)
     implementation(libs.ktorServerAuthJwt)
     implementation(libs.ktorServerCallLogging)

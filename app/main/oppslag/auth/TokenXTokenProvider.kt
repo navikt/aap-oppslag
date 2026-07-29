@@ -1,94 +1,33 @@
 package oppslag.auth
 
-import com.nimbusds.jose.JOSEObjectType
-import com.nimbusds.jose.JWSAlgorithm
-import com.nimbusds.jose.JWSHeader
-import com.nimbusds.jose.crypto.RSASSASigner
-import com.nimbusds.jose.jwk.RSAKey
-import com.nimbusds.jwt.JWTClaimsSet
-import com.nimbusds.jwt.SignedJWT
-import io.ktor.client.call.body
-import io.ktor.client.request.accept
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.contentType
-import io.ktor.http.isSuccess
-import io.ktor.serialization.jackson.jackson
-import org.slf4j.LoggerFactory
-import java.time.Instant
-import java.util.*
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
+import oppslag.http.HttpClientFactory
 
-private val secureLog = LoggerFactory.getLogger("team-logs")
-class TokenXTokenProvider(
-    private val config: TokenXProviderConfig,
-    private val audience: String,
-    private val client: io.ktor.client.HttpClient = defaultHttpClient,
-) {
+interface ITokenProvider {
+    suspend fun m2mToken(scope: String): String
+    suspend fun oboToken(scope: String, currentToken: OidcToken): String
+}
 
-    private val jwtFactory = JwtGrantFactory(config)
-    suspend fun getOnBehalfOfToken(tokenx_token: String) = getAccessToken(tokenx_token+audience) {
-        """
-            grant_type=urn:ietf:params:oauth:grant-type:token-exchange
-            &client_assertion_type=urn:ietf:params:oauth:client-assertion-type:jwt-bearer
-            &subject_token_type=urn:ietf:params:oauth:token-type:jwt
-            &client_assertion=${jwtFactory.jwt}
-            &audience=$audience
-            &subject_token=$tokenx_token
-        """.trimIndent()
-            .replace("\n", "")
+object TokenXTokenProvider : ITokenProvider {
+    private val texasGateway: TexasGateway = TexasGateway(HttpClientFactory.create())
+
+    override suspend fun oboToken(scope: String, currentToken: OidcToken): String {
+        return texasGateway.oboToken(scope, currentToken)
     }
 
-    private val cache = TokenCache()
-
-    private suspend fun getAccessToken(cacheKey: String, body: () -> String): String {
-        val token = cache.get(cacheKey)
-            ?: client.post(config.tokenEndpoint) {
-                accept(io.ktor.http.ContentType.Application.Json)
-                contentType(io.ktor.http.ContentType.Application.FormUrlEncoded)
-                setBody(body())
-            }.also {
-                if (!it.status.isSuccess()) {
-                    secureLog.warn("Feilet token-kall {}: {}", it.status.value, it.bodyAsText())
-                }
-            }.body<Token>().also {
-                cache.add(cacheKey, it)
-            }
-
-        return token.access_token
-    }
-
-    private companion object {
-        private val defaultHttpClient = io.ktor.client.HttpClient(io.ktor.client.engine.cio.CIO) {
-            install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
-                jackson {
-                    registerModule(com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
-                    disable(com.fasterxml.jackson.databind.DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-                }
-            }
-        }
+    override suspend fun m2mToken(scope: String): String {
+        return texasGateway.m2mToken(scope)
     }
 }
 
-internal class JwtGrantFactory(private val config: TokenXProviderConfig) {
-    internal val jwt: String get() = signedJwt.serialize()
+object AzureTokenProvider : ITokenProvider {
+    private val texasGateway: TexasGateway = TexasGateway(HttpClientFactory.create())
 
-    private val privateKey = RSAKey.parse(config.privateKey)
-    private val signedJwt get() = SignedJWT(jwsHeader, jwtClaimSet).apply { sign(RSASSASigner(privateKey)) }
-    private val jwsHeader
-        get() = JWSHeader.Builder(JWSAlgorithm.RS256)
-            .keyID(privateKey.keyID)
-            .type(JOSEObjectType.JWT)
-            .build()
+    override suspend fun oboToken(scope: String, currentToken: OidcToken): String {
+        return texasGateway.oboToken(scope, currentToken)
+    }
 
-    private val jwtClaimSet: JWTClaimsSet
-        get() = JWTClaimsSet.Builder().apply {
-            subject(config.clientId)
-            issuer(config.clientId)
-            audience(config.tokenEndpoint)
-            jwtID(UUID.randomUUID().toString())
-            notBeforeTime(Date())
-            issueTime(Date())
-            expirationTime(Date.from(Instant.now().plusSeconds(120)))
-        }.build()
+    override suspend fun m2mToken(scope: String): String {
+        return texasGateway.m2mToken(scope)
+    }
 }

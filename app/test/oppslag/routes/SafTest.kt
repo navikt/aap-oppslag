@@ -34,9 +34,8 @@ class SafTest {
                     }
                 }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/dokumenter/1234567") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     header("Nav-CallId", UUID.randomUUID())
                     accept(ContentType.Application.Json)
                 }.body<List<Dokument>>()
@@ -61,9 +60,8 @@ class SafTest {
                     }
                 }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/dokumenter/400000000/json") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     header("Nav-CallId", UUID.randomUUID())
                     accept(ContentType.Application.Json)
                 }.body<ByteArray>()

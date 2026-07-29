@@ -57,7 +57,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                 val personident = call.request.header("personident")
                     ?: return@get call.respond(HttpStatusCode.BadRequest, "mangler personident i header")
 
-                pdl.hentNavn(personident, callId)
+                pdl.hentNavn(personident, call.authToken(), callId)
                     .onSuccess { call.respond(it) }
                     .onFailure {
                         LOGGER.error("Feil ved henting av navn", it)

@@ -26,7 +26,8 @@ class TexasGateway(
                     "target" to scope
                 )
             )
-        }.body<Map<String, String>>()["access_token"]!!
+        }.body<Map<String, String>>()["access_token"]
+            ?: error("Feil ved henting av M2M-token (identityProvider=$identityProvider)")
     }
 
     override suspend fun oboToken(scope: String, currentToken: OidcToken): String {
@@ -39,6 +40,7 @@ class TexasGateway(
                     "user_token" to currentToken.token()
                 )
             )
-        }.body<Map<String, String>>()["access_token"]!!
+        }.body<Map<String, String>>()["access_token"]
+            ?: error("Feil ved henting av OBO-token (identityProvider=$identityProvider)")
     }
 }

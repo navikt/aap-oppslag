@@ -1,8 +1,13 @@
 package oppslag.integrasjoner.pdl
 
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.PdlConfig
 import oppslag.auth.AzureTokenProvider
@@ -27,7 +32,11 @@ class PdlGraphQLClient(
         return res.map { it.data?.hentPerson?.toSøker() }
     }
 
-    suspend fun hentNavn(personident: String, callId: String): Result<Navn> {
+    suspend fun hentNavn(personident: String, oidcToken: OidcToken, callId: String): Result<Navn> {
+        if (!oidcToken.isClientCredentials()) {
+            error("Kan ikke hente navn med bruker-token!")
+        }
+
         val token = azureTokenProvider.m2mToken(pdlConfig.scope)
 
         return query(token, PdlRequest.hentNavn(personident), callId).map {
@@ -79,8 +88,8 @@ class PdlGraphQLClient(
         oidcToken: OidcToken,
         callId: String
     ): Result<List<PdlPerson>> {
-        val azureToken = tokenXTokenProvider.oboToken(pdlConfig.scope, oidcToken)
-        return query(azureToken, hentBarnInfo(personIdenter), callId)
+        val token = tokenXTokenProvider.oboToken(pdlConfig.scope, oidcToken)
+        return query(token, hentBarnInfo(personIdenter), callId)
             .map {
                 it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
                     barnInfo.person?.let { barn ->

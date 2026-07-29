@@ -29,15 +29,15 @@ class BehandlerClient(private val behandlerConfig: BehandlerConfig) {
 
     fun hentBehandler(
         oidcToken: OidcToken,
-        callId: String?
+        callId: String?,
     ): List<BehandlerRespons> =
         clientLatencyStats.startTimer().use {
             runBlocking {
                 val obotoken = TokenXTokenProvider.oboToken(behandlerConfig.scope, oidcToken)
                 val response = httpClient.get("${behandlerConfig.baseUrl}/api/person/v1/behandler/self") {
                     accept(ContentType.Application.Json)
-                    header("Nav-Callid", callId) //TODO: sjekk om dette er riktig
-                    bearerAuth(obotoken )
+                    header("Nav-Callid", callId)
+                    bearerAuth(obotoken)
                 }
                 if (response.status.isSuccess() || response.status.value == 409) {
                     response.body()

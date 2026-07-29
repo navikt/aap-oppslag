@@ -1,5 +1,6 @@
 package oppslag.fakes
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -28,7 +29,6 @@ fun Application.texasFake() {
 }
 
 data class TestToken(
-    val access_token: String = "very.secure.token",
-    val exprires_in: Int = 3599,
+    @param:JsonProperty("access_token") val accessToken: String = "very.secure.token",
+    @param:JsonProperty("expires_in") val expiresIn: Long = 3600,
 )
-

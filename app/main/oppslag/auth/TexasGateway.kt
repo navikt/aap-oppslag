@@ -10,7 +10,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import no.nav.aap.komponenter.server.auth.IdentityProvider
 import oppslag.getEnvVar
 
-class TexasGateway(
+internal class TexasGateway(
     private val identityProvider: IdentityProvider,
     private val httpClient: HttpClient,
 ) : ITokenProvider {

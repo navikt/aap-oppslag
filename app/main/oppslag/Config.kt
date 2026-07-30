@@ -1,6 +1,6 @@
 package oppslag
 
-fun getEnvVar(envar: String) = System.getProperty(envar) ?: System.getenv(envar) ?: error("missing envvar $envar")
+fun getEnvVar(envar: String) = System.getenv(envar) ?: System.getProperty(envar) ?: error("missing envvar $envar")
 
 data class Config(
     val pdlConfig: PdlConfig = PdlConfig(),

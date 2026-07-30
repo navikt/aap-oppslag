@@ -17,8 +17,6 @@ internal object HttpClientFactory {
             requestTimeoutMillis = 25_000
             connectTimeoutMillis = 5_000
         }
-        install(HttpRequestRetry)
-
         install(ContentNegotiation) {
             jackson {
                 disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -29,6 +27,17 @@ internal object HttpClientFactory {
         install(HttpRequestRetry) {
             retryOnServerErrors(maxRetries = 2)
             exponentialDelay()
+        }
+    }
+
+    fun createTexasClient(): HttpClient = HttpClient(CIO) {
+        install(HttpTimeout) {
+            requestTimeoutMillis = 2_000
+        }
+        install(ContentNegotiation) {
+            jackson {
+                disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            }
         }
     }
 }

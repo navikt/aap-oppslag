@@ -9,7 +9,7 @@ interface ITokenProvider {
     suspend fun oboToken(scope: String, currentToken: OidcToken): String
 }
 
-private val texasHttpClient = HttpClientFactory.create()
+private val texasHttpClient = HttpClientFactory.createTexasClient()
 
 object TokenXTokenProvider : ITokenProvider {
     private val texasGateway: TexasGateway = TexasGateway(IdentityProvider.TOKENX, texasHttpClient)

@@ -10,15 +10,15 @@ internal object TestConfig {
             ),
             krrConfig = KrrConfig(
                 baseUrl = "http://localhost:${Fakes.krr.port()}",
-                scope = "api://dev-fss.teamdokumenthandtering.krr/.default"
+                audience = "dev-fss.teamdokumenthandtering.krr"
             ),
             behandlerConfig = BehandlerConfig(
                 baseUrl = "http://localhost:${Fakes.behandler.port()}",
-                scope = "api://dev-fss.teamdokumenthandtering.behandler/.default"
+                audience = "dev-fss.teamdokumenthandtering.behandler"
             ),
             safConfig = SafConfig(
                 baseUrl = "http://localhost:${Fakes.saf.port()}",
-                scope = "api://dev-fss.teamdokumenthandtering.safselvbetjening/.default"
+                audience = "dev-fss.teamdokumenthandtering.safselvbetjening"
             )
         )
     }

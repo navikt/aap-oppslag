@@ -1,6 +1,6 @@
 package oppslag
 
-fun getEnvVar(envar: String) = System.getProperty(envar) ?: System.getenv(envar) ?: error("missing envvar $envar")
+fun getEnvVar(envar: String) = System.getenv(envar) ?: System.getProperty(envar) ?: error("missing envvar $envar")
 
 data class Config(
     val pdlConfig: PdlConfig = PdlConfig(),
@@ -17,15 +17,15 @@ data class PdlConfig(
 
 data class KrrConfig(
     val baseUrl: String = getEnvVar("KRR_BASE_URL"),
-    val scope: String = getEnvVar("KRR_SCOPE")
+    val audience: String = getEnvVar("KRR_AUDIENCE")
 )
 
 data class BehandlerConfig(
     val baseUrl: String = getEnvVar("BEHANDLER_BASE_URL"),
-    val scope: String = getEnvVar("BEHANDLER_SCOPE")
+    val audience: String = getEnvVar("BEHANDLER_AUDIENCE")
 )
 
 data class SafConfig(
     val baseUrl: String = getEnvVar("SAF_BASE_URL"),
-    val scope: String = getEnvVar("SAF_SCOPE")
+    val audience: String = getEnvVar("SAF_AUDIENCE")
 )

@@ -10,7 +10,7 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import no.nav.aap.komponenter.server.auth.IdentityProvider
 import oppslag.getEnvVar
 
-class TexasGateway(
+internal class TexasGateway(
     private val identityProvider: IdentityProvider,
     private val httpClient: HttpClient,
 ) : ITokenProvider {
@@ -20,13 +20,9 @@ class TexasGateway(
     override suspend fun m2mToken(scope: String): String {
         return httpClient.post(texasTokenEndpoint) {
             contentType(ContentType.Application.Json)
-            setBody(
-                mapOf(
-                    "identity_provider" to identityProvider.value,
-                    "target" to scope
-                )
-            )
-        }.body<Map<String, String>>()["access_token"]!!
+            setBody(mapOf("identity_provider" to identityProvider.value, "target" to scope))
+        }.body<Map<String, String>>()["access_token"]
+            ?: error("Feil ved henting av M2M-token: mangler access_token i respons (identityProvider=$identityProvider)")
     }
 
     override suspend fun oboToken(scope: String, currentToken: OidcToken): String {
@@ -39,6 +35,7 @@ class TexasGateway(
                     "user_token" to currentToken.token()
                 )
             )
-        }.body<Map<String, String>>()["access_token"]!!
+        }.body<Map<String, String>>()["access_token"]
+            ?: error("Feil ved henting av OBO-token: mangler access_token i respons (identityProvider=$identityProvider)")
     }
 }

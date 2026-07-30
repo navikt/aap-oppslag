@@ -15,5 +15,6 @@ internal fun ApplicationCall.personident(): String {
 internal fun ApplicationCall.authToken(): OidcToken {
     return requireNotNull(this.request.headers["Authorization"]) {
         "Authorization header mangler"
-    }.split(" ")[1].let { OidcToken(it) }
+    }.removePrefix("Bearer ")
+        .let { OidcToken(it) }
 }

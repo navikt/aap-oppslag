@@ -70,7 +70,7 @@ class SafClient(private val safConfig: SafConfig) {
     }
 
     private suspend fun graphqlQuery(oidcToken: OidcToken, query: SafRequest, callId: String): SafRespons {
-        val token = TokenXTokenProvider.oboToken(safConfig.scope, oidcToken)
+        val token = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)
         val request = httpClient.post("${safConfig.baseUrl}/graphql") {
             accept(ContentType.Application.Json)
             header("Nav-Callid", callId)
@@ -95,7 +95,7 @@ class SafClient(private val safConfig: SafConfig) {
     ) =
         httpClient.get("${safConfig.baseUrl}/rest/hentdokument/$journalpostId/$dokumentId/$arkivtype") {
             header("Nav-Call-Id", callId)
-            bearerAuth(TokenXTokenProvider.oboToken(safConfig.scope, oidcToken))
+            bearerAuth(TokenXTokenProvider.oboToken(safConfig.audience, oidcToken))
             contentType(ContentType.Application.Json)
         }
 }

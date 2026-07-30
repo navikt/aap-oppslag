@@ -56,15 +56,15 @@ spec:
       value: api://dev-fss.pdl.pdl-api/.default
     - name: KRR_BASE_URL
       value: http://digdir-krr-proxy.team-rocket
-    - name: KRR_SCOPE
+    - name: KRR_AUDIENCE
       value: dev-gcp:team-rocket:digdir-krr-proxy
     - name: BEHANDLER_BASE_URL
       value: http://isdialogmelding.teamsykefravr
-    - name: BEHANDLER_SCOPE
+    - name: BEHANDLER_AUDIENCE
       value: dev-gcp:teamsykefravr:isdialogmelding
     - name: SAF_BASE_URL
       value: https://safselvbetjening.dev-fss-pub.nais.io
-    - name: SAF_SCOPE
+    - name: SAF_AUDIENCE
       value: dev-fss:teamdokumenthandtering:safselvbetjening
   accessPolicy:
     inbound:

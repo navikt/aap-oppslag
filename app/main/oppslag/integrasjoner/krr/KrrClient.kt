@@ -36,7 +36,7 @@ class KrrClient(private val krrConfig: KrrConfig) {
     ): KrrRespons =
         clientLatencyStats.startTimer().use {
             runBlocking {
-                val obotoken = TokenXTokenProvider.oboToken(krrConfig.scope, oidcToken)
+                val obotoken = TokenXTokenProvider.oboToken(krrConfig.audience, oidcToken)
                 val response = httpClient.post("${krrConfig.baseUrl}/rest/v1/personer") {
                     contentType(ContentType.Application.Json)
                     accept(ContentType.Application.Json)

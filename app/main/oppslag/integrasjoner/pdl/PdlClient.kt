@@ -11,7 +11,6 @@ import io.ktor.http.contentType
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.PdlConfig
 import oppslag.auth.AzureTokenProvider
-import oppslag.auth.TokenXTokenProvider
 import oppslag.http.HttpClientFactory
 import oppslag.integrasjoner.pdl.PdlRequest.Companion.hentBarnInfo
 
@@ -19,7 +18,6 @@ class PdlGraphQLClient(
     private val pdlConfig: PdlConfig
 ) {
     private val httpClient = HttpClientFactory.create()
-    private val tokenXTokenProvider = TokenXTokenProvider
     private val azureTokenProvider = AzureTokenProvider
 
     suspend fun hentPerson(
@@ -27,7 +25,7 @@ class PdlGraphQLClient(
         oidcToken: OidcToken,
         callId: String
     ): Result<Søker?> {
-        val token = tokenXTokenProvider.oboToken(pdlConfig.scope, oidcToken)
+        val token = azureTokenProvider.oboToken(pdlConfig.scope, oidcToken)
         val res = query(token, PdlRequest.hentPerson(personident), callId)
         return res.map { it.data?.hentPerson?.toSøker() }
     }
@@ -71,7 +69,7 @@ class PdlGraphQLClient(
         oidcToken: OidcToken,
         callId: String
     ): Result<List<String>> {
-        val token = tokenXTokenProvider.oboToken(pdlConfig.scope, oidcToken)
+        val token = azureTokenProvider.oboToken(pdlConfig.scope, oidcToken)
         return query(
             token,
             PdlRequest.hentBarnRelasjon(personident),
@@ -88,7 +86,7 @@ class PdlGraphQLClient(
         oidcToken: OidcToken,
         callId: String
     ): Result<List<PdlPerson>> {
-        val token = tokenXTokenProvider.oboToken(pdlConfig.scope, oidcToken)
+        val token = azureTokenProvider.oboToken(pdlConfig.scope, oidcToken)
         return query(token, hentBarnInfo(personIdenter), callId)
             .map {
                 it.data?.hentPersonBolk?.mapNotNull { barnInfo ->

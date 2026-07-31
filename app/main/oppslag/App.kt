@@ -59,6 +59,8 @@ fun Application.api(
     authentication(listOf(IdentityProvider.TOKENX, IdentityProvider.ENTRA_ID))
 
     install(CallLogging) {
+        disableDefaultColors() // Nødvendig for å rare tegn (fargekoder) i loggene
+
         callIdMdc(MdcKeys.CallId)
         mdc(MdcKeys.Method) { call -> call.request.httpMethod.value }
         mdc(MdcKeys.InboundUri) { call -> call.request.path() }

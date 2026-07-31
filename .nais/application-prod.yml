@@ -70,6 +70,8 @@ spec:
         - application: soknad
         - application: innsyn
         - application: innsending
+        - application: logging
+          namespace: nais-system
     outbound:
       external:
         - host: pdl-api.prod-fss-pub.nais.io

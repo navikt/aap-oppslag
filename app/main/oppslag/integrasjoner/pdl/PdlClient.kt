@@ -55,7 +55,7 @@ class PdlGraphQLClient(
             if (personIdenter.isEmpty()) {
                 return Result.success(emptyList())
             }
-            val listeMedBarn = hentBarnBolk(personIdenter, oidcToken, callId).filtrerBortDødeOgMyndige()
+            val listeMedBarn = hentBarnBolk(personIdenter, callId).filtrerBortDødeOgMyndige()
             if (listeMedBarn.harBeskyttedePersoner()) {
                 listeMedBarn.maskerNavn()
             } else {
@@ -85,10 +85,10 @@ class PdlGraphQLClient(
 
     private suspend fun hentBarnBolk(
         personIdenter: List<String>,
-        oidcToken: OidcToken,
         callId: String
     ): Result<List<PdlPerson>> {
-        val token = tokenXTokenProvider.oboToken(pdlConfig.audience, oidcToken)
+        // Kun systembruker kan bruke hentPersonBolk query mot PDL
+        val token = azureTokenProvider.m2mToken(pdlConfig.scope)
         return query(token, hentBarnInfo(personIdenter), callId)
             .map {
                 it.data?.hentPersonBolk?.mapNotNull { barnInfo ->

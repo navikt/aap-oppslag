@@ -2,28 +2,31 @@ package oppslag.routes
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.testing.*
-import oppslag.Fakes
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.http.ContentType
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.testing.testApplication
+import java.util.UUID
 import oppslag.TestConfig
 import oppslag.TokenXGen
+import oppslag.WithFakes
 import oppslag.api
 import oppslag.integrasjoner.saf.Dokument
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
+@WithFakes
 class SafTest {
 
     @Test
     fun `Henter en journalpost`() {
-        Fakes().use { fakes ->
             testApplication {
-                val config = TestConfig.default(fakes)
+                val config = TestConfig.default()
                 application { api(config) }
                 val client = createClient {
                     install(ContentNegotiation) {
@@ -34,23 +37,20 @@ class SafTest {
                     }
                 }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/dokumenter/1234567") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     header("Nav-CallId", UUID.randomUUID())
                     accept(ContentType.Application.Json)
                 }.body<List<Dokument>>()
 
                 assertEquals(1, res.size)
             }
-        }
     }
 
     @Test
     fun `Henter ut JSON`() {
-        Fakes().use { fakes ->
             testApplication {
-                val config = TestConfig.default(fakes)
+                val config = TestConfig.default()
                 application { api(config) }
                 val client = createClient {
                     install(ContentNegotiation) {
@@ -61,15 +61,13 @@ class SafTest {
                     }
                 }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/dokumenter/400000000/json") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     header("Nav-CallId", UUID.randomUUID())
                     accept(ContentType.Application.Json)
                 }.body<ByteArray>()
 
                 assertEquals("{}", String(res))
             }
-        }
     }
 }

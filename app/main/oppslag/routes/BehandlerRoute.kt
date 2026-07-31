@@ -1,15 +1,16 @@
 package oppslag.routes
 
-import io.ktor.http.*
-import io.ktor.server.application.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.request.header
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
+import java.util.UUID
+import oppslag.LOGGER
 import oppslag.auth.authToken
 import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.behandler.RegistrertBehandler
-import java.util.UUID
-import oppslag.LOGGER
 
 fun Route.behandlerRoute(behandler: BehandlerClient) {
     route("/fastlege") {

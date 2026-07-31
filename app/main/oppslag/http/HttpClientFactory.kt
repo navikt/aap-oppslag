@@ -10,15 +10,12 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.serialization.jackson.jackson
 
-
 internal object HttpClientFactory {
     fun create(): HttpClient = HttpClient(CIO) {
         install(HttpTimeout) {
             requestTimeoutMillis = 25_000
             connectTimeoutMillis = 5_000
         }
-        install(HttpRequestRetry)
-
         install(ContentNegotiation) {
             jackson {
                 disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
@@ -30,5 +27,17 @@ internal object HttpClientFactory {
             retryOnServerErrors(maxRetries = 2)
             exponentialDelay()
         }
+    }
+
+    fun createTexasClient(): HttpClient = HttpClient(CIO) {
+        install(HttpTimeout) {
+            requestTimeoutMillis = 2_000
+        }
+        install(ContentNegotiation) {
+            jackson {
+                disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+            }
+        }
+        expectSuccess = true
     }
 }

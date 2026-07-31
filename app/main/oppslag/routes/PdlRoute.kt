@@ -1,20 +1,21 @@
 package oppslag.routes
 
-import io.ktor.http.*
-import io.ktor.server.auth.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.server.auth.authenticate
+import io.ktor.server.request.header
+import io.ktor.server.response.respond
+import io.ktor.server.routing.Route
+import io.ktor.server.routing.get
+import io.ktor.server.routing.route
+import java.util.UUID
+import no.nav.aap.komponenter.server.auth.IdentityProvider
 import oppslag.LOGGER
-import oppslag.auth.AZURE
-import oppslag.auth.TOKENX
 import oppslag.auth.authToken
 import oppslag.auth.personident
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
-import java.util.*
 
 fun Route.pdlRoute(pdl: PdlGraphQLClient) {
-    authenticate(TOKENX) {
+    authenticate(IdentityProvider.TOKENX.value) {
         route("/person") {
             get {
                 val personIdent = call.personident()
@@ -49,14 +50,14 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
         }
     }
 
-    authenticate(AZURE) {
+    authenticate(IdentityProvider.ENTRA_ID.value) {
         route("/person") {
             get("/navn") {
                 val callId = call.request.header("Nav-CallId") ?: UUID.randomUUID().toString()
                 val personident = call.request.header("personident")
                     ?: return@get call.respond(HttpStatusCode.BadRequest, "mangler personident i header")
 
-                pdl.hentNavn(personident, callId)
+                pdl.hentNavn(personident, call.authToken(), callId)
                     .onSuccess { call.respond(it) }
                     .onFailure {
                         LOGGER.error("Feil ved henting av navn", it)

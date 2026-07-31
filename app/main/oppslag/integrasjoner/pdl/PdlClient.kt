@@ -1,40 +1,43 @@
 package oppslag.integrasjoner.pdl
 
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.http.*
+import io.ktor.client.call.body
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.PdlConfig
-import oppslag.auth.AzureAdTokenProvider
-import oppslag.auth.AzureConfig
-import oppslag.auth.TokenXProviderConfig
+import oppslag.auth.AzureTokenProvider
 import oppslag.auth.TokenXTokenProvider
 import oppslag.http.HttpClientFactory
 import oppslag.integrasjoner.pdl.PdlRequest.Companion.hentBarnInfo
 
 class PdlGraphQLClient(
-    tokenXProviderConfig: TokenXProviderConfig,
-    azureConfig: AzureConfig,
     private val pdlConfig: PdlConfig
 ) {
     private val httpClient = HttpClientFactory.create()
-    private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, pdlConfig.audience)
-    private val azureTokenProvider = AzureAdTokenProvider(
-        azureConfig,
-        pdlConfig.scope
-    )
+    private val tokenXTokenProvider = TokenXTokenProvider
+    private val azureTokenProvider = AzureTokenProvider
 
     suspend fun hentPerson(
         personident: String,
-        tokenXToken: String,
+        oidcToken: OidcToken,
         callId: String
     ): Result<Søker?> {
-        val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
+        val token = tokenXTokenProvider.oboToken(pdlConfig.audience, oidcToken)
         val res = query(token, PdlRequest.hentPerson(personident), callId)
         return res.map { it.data?.hentPerson?.toSøker() }
     }
 
-    suspend fun hentNavn(personident: String, callId: String): Result<Navn> {
-        val token = azureTokenProvider.getClientCredentialToken()
+    suspend fun hentNavn(personident: String, oidcToken: OidcToken, callId: String): Result<Navn> {
+        if (!oidcToken.isClientCredentials()) {
+            error("Kan ikke hente navn med bruker-token!")
+        }
+
+        val token = azureTokenProvider.m2mToken(pdlConfig.scope)
 
         return query(token, PdlRequest.hentNavn(personident), callId).map {
             it.data?.hentPerson?.toNavn() ?: error("Fant ikke person i PDL")
@@ -43,16 +46,16 @@ class PdlGraphQLClient(
 
     suspend fun hentBarn(
         personident: String,
-        tokenXToken: String,
+        oidcToken: OidcToken,
         callId: String
     ): Result<List<Barn>> {
-        val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, tokenXToken, callId)
+        val maybeRelatertPersonIdenter = hentBarnRelasjon(personident, oidcToken, callId)
 
         return maybeRelatertPersonIdenter.map { personIdenter ->
             if (personIdenter.isEmpty()) {
                 return Result.success(emptyList())
             }
-            val listeMedBarn = hentBarnBolk(personIdenter, callId).filtrerBortDødeOgMyndige()
+            val listeMedBarn = hentBarnBolk(personIdenter, oidcToken, callId).filtrerBortDødeOgMyndige()
             if (listeMedBarn.harBeskyttedePersoner()) {
                 listeMedBarn.maskerNavn()
             } else {
@@ -65,10 +68,10 @@ class PdlGraphQLClient(
 
     private suspend fun hentBarnRelasjon(
         personident: String,
-        tokenXToken: String,
+        oidcToken: OidcToken,
         callId: String
     ): Result<List<String>> {
-        val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
+        val token = tokenXTokenProvider.oboToken(pdlConfig.audience, oidcToken)
         return query(
             token,
             PdlRequest.hentBarnRelasjon(personident),
@@ -82,10 +85,11 @@ class PdlGraphQLClient(
 
     private suspend fun hentBarnBolk(
         personIdenter: List<String>,
+        oidcToken: OidcToken,
         callId: String
     ): Result<List<PdlPerson>> {
-        val azureToken = azureTokenProvider.getClientCredentialToken()
-        return query(azureToken, hentBarnInfo(personIdenter), callId)
+        val token = tokenXTokenProvider.oboToken(pdlConfig.audience, oidcToken)
+        return query(token, hentBarnInfo(personIdenter), callId)
             .map {
                 it.data?.hentPersonBolk?.mapNotNull { barnInfo ->
                     barnInfo.person?.let { barn ->

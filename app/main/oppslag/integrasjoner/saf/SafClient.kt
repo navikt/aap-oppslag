@@ -1,27 +1,32 @@
 package oppslag.integrasjoner.saf
 
-import io.ktor.client.call.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
-import io.ktor.server.plugins.*
-import io.ktor.utils.io.jvm.javaio.*
-import oppslag.LOGGER
-import oppslag.auth.TokenXProviderConfig
-import oppslag.auth.TokenXTokenProvider
-import oppslag.SafConfig
-import oppslag.http.HttpClientFactory
+import io.ktor.client.call.body
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.server.plugins.NotFoundException
+import io.ktor.utils.io.jvm.javaio.toInputStream
 import java.io.InputStream
+import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
+import oppslag.LOGGER
+import oppslag.SafConfig
+import oppslag.auth.TokenXTokenProvider
+import oppslag.http.HttpClientFactory
 
-class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfig: SafConfig) {
-    private val tokenProvider = TokenXTokenProvider(tokenXProviderConfig, safConfig.scope)
+class SafClient(private val safConfig: SafConfig) {
     private val httpClient = HttpClientFactory.create()
 
-    suspend fun hentJson(tokenXToken: String, callId: String, journalpostId: String): ByteArray {
-        val journalpostreq = graphqlQuery(tokenXToken, SafRequest.hentJournalpost(journalpostId), callId)
+    suspend fun hentJson(oidcToken: OidcToken, callId: String, journalpostId: String): ByteArray {
+        val journalpostreq = graphqlQuery(oidcToken, SafRequest.hentJournalpost(journalpostId), callId)
         val journalpost = journalpostreq.data?.journalpostById?: throw SafException("Fant ikke journalpost for $journalpostId")
-
-
 
         val dokument = journalpost.dokumenter?.find {dokInfo ->
             dokInfo?.dokumentvarianter?.find { dokVariant ->
@@ -33,7 +38,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
             LOGGER.error("innhold i journalpost: $journalpostreq")
         }
 
-        val response = restQuery(tokenXToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")
+        val response = restQuery(oidcToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")
 
         return when(response.status) {
             HttpStatusCode.OK -> response.body()
@@ -42,20 +47,20 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         }
     }
 
-    suspend fun hentJournalpostSomDokumenter(journalpostId: String, tokenXToken: String, callId: String): List<Dokument> {
-        val res = graphqlQuery(tokenXToken, SafRequest.hentJournalpost(journalpostId), callId)
+    suspend fun hentJournalpostSomDokumenter(journalpostId: String, oidcToken: OidcToken, callId: String): List<Dokument> {
+        val res = graphqlQuery(oidcToken, SafRequest.hentJournalpost(journalpostId), callId)
         val journalposter = res.data?.journalpostById?.toDokumenter()
         return journalposter ?: emptyList()
     }
 
-    suspend fun hentDokumenter(personident: String, tokenXToken: String, callId: String): List<Dokument> {
-        val res = graphqlQuery(tokenXToken, SafRequest.hentDokumenter(personident), callId)
+    suspend fun hentDokumenter(personident: String, oidcToken: OidcToken, callId: String): List<Dokument> {
+        val res = graphqlQuery(oidcToken, SafRequest.hentDokumenter(personident), callId)
         val journalposter = res.data?.dokumentoversiktSelvbetjening?.toDokumenter()
         return journalposter?: emptyList()
     }
 
-    suspend fun hentDokument(tokenXToken: String, journalpostId: String, dokumentId: String, callId: String): InputStream {
-        val response = restQuery(tokenXToken, journalpostId, dokumentId, callId)
+    suspend fun hentDokument(oidcToken: OidcToken, journalpostId: String, dokumentId: String, callId: String): InputStream {
+        val response = restQuery(oidcToken, journalpostId, dokumentId, callId)
 
         return when (response.status) {
             HttpStatusCode.OK -> response.bodyAsChannel().toInputStream()
@@ -64,8 +69,8 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
         }
     }
 
-    private suspend fun graphqlQuery(tokenXToken: String, query: SafRequest, callId: String): SafRespons {
-        val token = tokenProvider.getOnBehalfOfToken(tokenXToken)
+    private suspend fun graphqlQuery(oidcToken: OidcToken, query: SafRequest, callId: String): SafRespons {
+        val token = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)
         val request = httpClient.post("${safConfig.baseUrl}/graphql") {
             accept(ContentType.Application.Json)
             header("Nav-Callid", callId)
@@ -82,7 +87,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
     }
 
     private suspend fun restQuery(
-        tokenXToken: String,
+        oidcToken: OidcToken,
         journalpostId: String,
         dokumentId: String,
         callId: String,
@@ -90,7 +95,7 @@ class SafClient(tokenXProviderConfig: TokenXProviderConfig, private val safConfi
     ) =
         httpClient.get("${safConfig.baseUrl}/rest/hentdokument/$journalpostId/$dokumentId/$arkivtype") {
             header("Nav-Call-Id", callId)
-            bearerAuth(tokenProvider.getOnBehalfOfToken(tokenXToken))
+            bearerAuth(TokenXTokenProvider.oboToken(safConfig.audience, oidcToken))
             contentType(ContentType.Application.Json)
         }
 }

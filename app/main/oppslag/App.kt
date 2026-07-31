@@ -2,23 +2,26 @@ package oppslag
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.application.*
-import io.ktor.server.auth.*
-import io.ktor.server.engine.*
-import io.ktor.server.metrics.micrometer.*
-import io.ktor.server.netty.*
-import io.ktor.server.plugins.calllogging.*
-import io.ktor.server.plugins.contentnegotiation.*
-import io.ktor.server.plugins.statuspages.*
-import io.ktor.server.request.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.application.Application
+import io.ktor.server.application.install
+import io.ktor.server.auth.authenticate
+import io.ktor.server.engine.embeddedServer
+import io.ktor.server.metrics.micrometer.MicrometerMetrics
+import io.ktor.server.netty.Netty
+import io.ktor.server.plugins.calllogging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.statuspages.StatusPages
+import io.ktor.server.request.header
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.path
+import io.ktor.server.response.respondText
+import io.ktor.server.routing.routing
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
-import oppslag.auth.TOKENX
-import oppslag.auth.authentication
+import no.nav.aap.komponenter.server.auth.IdentityProvider
+import no.nav.aap.komponenter.server.authentication
 import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.krr.KrrClient
 import oppslag.integrasjoner.pdl.PdlException
@@ -26,7 +29,11 @@ import oppslag.integrasjoner.pdl.PdlGraphQLClient
 import oppslag.integrasjoner.saf.DokumentIkkeFunnet
 import oppslag.integrasjoner.saf.SafClient
 import oppslag.integrasjoner.saf.SafException
-import oppslag.routes.*
+import oppslag.routes.actuator
+import oppslag.routes.behandlerRoute
+import oppslag.routes.krrRoute
+import oppslag.routes.pdlRoute
+import oppslag.routes.safRoute
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.slf4j.event.Level
@@ -42,15 +49,14 @@ fun Application.api(
     config: Config = Config(),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-    val pdl = PdlGraphQLClient(config.tokenx, config.azureConfig ,config.pdlConfig)
-    val krr = KrrClient(config.tokenx, config.krrConfig)
-    val behandler = BehandlerClient(config.tokenx, config.behandlerConfig)
-    val saf = SafClient(config.tokenx, config.safConfig)
+    val pdl = PdlGraphQLClient(config.pdlConfig)
+    val krr = KrrClient(config.krrConfig)
+    val behandler = BehandlerClient(config.behandlerConfig)
+    val saf = SafClient(config.safConfig)
 
     install(MicrometerMetrics) { registry = prometheus }
 
-    authentication(config.tokenx)
-    authentication(config.azureConfig)
+    authentication(listOf(IdentityProvider.TOKENX, IdentityProvider.ENTRA_ID))
 
     install(CallLogging) {
         level = Level.INFO
@@ -93,7 +99,7 @@ fun Application.api(
     }
 
     routing {
-        authenticate(TOKENX) {
+        authenticate(IdentityProvider.TOKENX.value) {
             behandlerRoute(behandler)
             krrRoute(krr)
             safRoute(saf)

@@ -64,9 +64,9 @@ fun Route.safRoute(saf: SafClient) {
                 call.respond(
                     HttpStatusCode.OK,
                     saf.hentJson(
-                        tokenXToken = token,
                         callId = callId,
-                        journalpostId = journalpostid
+                        journalpostId = journalpostid,
+                        oidcToken = token
                     )
                 )
             } catch (e: NotFoundException) {

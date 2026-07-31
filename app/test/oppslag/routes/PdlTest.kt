@@ -1,51 +1,52 @@
 package oppslag.routes
 
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.client.call.*
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
-import io.ktor.server.testing.*
-import oppslag.Fakes
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.accept
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.jackson.jackson
+import io.ktor.server.testing.testApplication
+import java.util.UUID
 import oppslag.TestConfig
 import oppslag.TokenXGen
+import oppslag.WithFakes
 import oppslag.api
 import oppslag.integrasjoner.pdl.Barn
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
+@WithFakes
 class PdlTest {
 
     @Test
     fun `Kan hente personData`() {
-        Fakes().use { fakes ->
             testApplication {
-                val config = TestConfig.default(fakes)
+                val config = TestConfig.default()
                 application { api(config) }
                 val client = createClient {
                     install(ContentNegotiation){
                         jackson()
                     } }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/person") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     header("Nav-CallId", UUID.randomUUID())
                     accept(ContentType.Application.Json)
                 }
 
                 assertEquals(HttpStatusCode.OK, res.status)
             }
-        }
     }
 
     @Test
     fun `Kan hente levende og umyndige barn`() {
-        Fakes().use { fakes ->
             testApplication {
-                val config = TestConfig.default(fakes)
+                val config = TestConfig.default()
                 application { api(config) }
                 val client = createClient {
                     install(ContentNegotiation){
@@ -54,9 +55,8 @@ class PdlTest {
                         }
                     } }
 
-                val tokenXGen = TokenXGen(config.tokenx)
                 val res = client.get("/person/barn") {
-                    bearerAuth(tokenXGen.generate("12345678910"))
+                    bearerAuth(TokenXGen.generate("12345678910"))
                     header("Nav-CallId", UUID.randomUUID())
                     accept(ContentType.Application.Json)
                 }
@@ -64,8 +64,6 @@ class PdlTest {
                 val barn = res.body<List<Barn>>().single()
                 assertEquals(barn.navn, "kari Mellomnavn Nordmann")
                 assertEquals(HttpStatusCode.OK, res.status)
-
             }
-        }
     }
 }

@@ -1,7 +1,7 @@
 [versions]
 kelvin = "2.0.125"
 ktor = "3.5.1"
-logback = "1.6.0"
+logback = "1.6.1"
 logstash = "9.0"
 micrometer = "1.17.0"
 prometheus = "1.8.0"

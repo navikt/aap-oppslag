@@ -8,7 +8,7 @@ prometheus = "1.8.0"
 jackson = "2.22.1"
 jackson3 = "3.2.1"
 nimbusJoseJwt = "10.9.1"
-netty = "4.2.16.Final"
+netty = "4.2.17.Final"
 
 [libraries]
 kelvin-server = { module = "no.nav.aap.kelvin:server", version.ref = "kelvin" }

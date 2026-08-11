@@ -1,5 +1,5 @@
 [versions]
-kelvin = "2.0.129"
+kelvin = "2.0.131"
 ktor = "3.5.2"
 logback = "1.6.1"
 logstash = "9.0"

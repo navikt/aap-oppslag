@@ -1,13 +1,13 @@
 [versions]
 kelvin = "2.0.173"
-ktor = "3.5.2"
+ktor = "3.6.0"
 logback = "1.6.3"
 logstash = "9.0"
 micrometer = "1.17.1"
-prometheus = "1.8.0"
-jackson = "2.22.2"
+prometheus = "1.9.0"
+jackson = "2.22.3"
 jackson3 = "3.2.3"
-nimbusJoseJwt = "10.9.1"
+nimbusJoseJwt = "10.10"
 netty = "4.2.18.Final"
 
 [libraries]

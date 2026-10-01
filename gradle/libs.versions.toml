@@ -1,6 +1,6 @@
 [versions]
 kelvin = "2.0.173"
-prometheus = "1.8.0"
+prometheus = "1.9.0"
 jackson3-security-override = "3.2.3"
 netty = "4.2.18.Final"
 

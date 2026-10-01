@@ -2,6 +2,7 @@
 
 plugins {
     id("org.jetbrains.kotlin.jvm")
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
 group = "no.nav.aap.oppgave"
@@ -10,7 +11,8 @@ version = project.findProperty("version")?.toString() ?: "0.0.0"
 // https://docs.gradle.org/8.12.1/userguide/jvm_test_suite_plugin.html
 testing {
     suites {
-        @Suppress("UnstableApiUsage", "unused") val test= getByName<JvmTestSuite>("test") {
+        @Suppress("UnstableApiUsage")
+        named<JvmTestSuite>("test") {
             useJUnitJupiter()
         }
     }
@@ -25,12 +27,7 @@ tasks {
         }
     }
 
-    (findByName("jar") as? Jar)?.apply {
-        // Bruk et unikt navn for jar-filen til hver submodul, for å unngå navnekollisjoner i multi-modul prosjekt,
-        // gjennom at vi ikke bruker samme navn, feks. "kontrakt.jar" og "api.jar", i flere moduler.
-        // Dette unngår feil av typen "Entry <name>.jar is a duplicate but no duplicate handling strategy has been set"
-        // Alternativet er å unngå å bruke det eksakt samme navnet på submoduler fra forskjellige moduler,
-        // som feks "kontrakt".
+    withType<Jar>().configureEach {
         archiveBaseName.set("${rootProject.name}-${project.name}")
     }
 }
@@ -39,8 +36,8 @@ kotlin {
     jvmToolchain(21)
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
-        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_3)
-        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_3)
+        apiVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_4)
+        languageVersion.set(org.jetbrains.kotlin.gradle.dsl.KotlinVersion.KOTLIN_2_4)
 
         // Bruk et unikt navn for <submodule>.kotlin_module for hver Gradle-submodul, for å unngå navnekollisjoner i
         // multi-modul prosjekt, hvor vi inkluderer flere av våre kotlin-moduler i samme jar-fil eller

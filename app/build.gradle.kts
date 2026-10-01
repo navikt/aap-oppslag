@@ -1,8 +1,6 @@
 plugins {
-    kotlin("jvm")
-    kotlin("plugin.serialization")
     id("aap.conventions")
-    alias(libs.plugins.ktor)
+    alias(kelvinLibs.plugins.ktor)
     application
 }
 
@@ -13,40 +11,39 @@ application {
 dependencies {
     implementation(libs.kelvin.server)
 
-    implementation(libs.ktorServerAuth)
-    implementation(libs.ktorServerAuthJwt)
-    implementation(libs.ktorServerCallLogging)
-    implementation(libs.ktorServerCallLoggingJvm)
-    implementation(libs.ktorServerContentNegotiation)
-    implementation(libs.ktorServerCore)
-    implementation(libs.ktorServerMetricsMicrometer)
-    implementation(libs.ktorServerNetty)
+    implementation(kelvinLibs.ktor.server.auth)
+    implementation(kelvinLibs.ktor.server.auth.jwt)
+    implementation(kelvinLibs.ktor.server.call.logging)
+    implementation(kelvinLibs.ktor.server.content.negotiation)
+    implementation(kelvinLibs.ktor.server.core)
+    implementation(kelvinLibs.ktor.server.metrics.micrometer)
+    implementation(kelvinLibs.ktor.server.netty)
     constraints {
-        implementation(libs.nettyCommon)
+        implementation(libs.netty.common)
         // CVE-2026-54512
-        implementation(libs.jacksonCore3)
-        implementation(libs.jacksonDatabind3)
+        implementation(libs.jackson.core3)
+        implementation(libs.jackson.databind3)
     }
-    implementation(libs.ktorServerStatusPages)
+    implementation(kelvinLibs.ktor.server.status.pages)
 
-    implementation(libs.ktorClientAuth)
-    implementation(libs.ktorClientCio)
-    implementation(libs.ktorClientContentNegotiation)
-    implementation(libs.ktorClientJackson)
-    implementation(libs.ktorClientCore)
-    implementation(libs.ktorClientLogging)
-    implementation(libs.ktorServerRoutingOpenapi)
+    implementation(kelvinLibs.ktor.client.auth)
+    implementation(kelvinLibs.ktor.client.cio)
+    implementation(kelvinLibs.ktor.client.content.negotiation)
+    implementation(kelvinLibs.ktor.client.jackson)
+    implementation(kelvinLibs.ktor.client.core)
+    implementation(kelvinLibs.ktor.client.logging)
+    implementation("io.ktor:ktor-server-routing-openapi:${kelvinLibs.versions.ktor.get()}")
 
-    implementation(libs.micrometerRegistryPrometheus)
-    implementation(libs.prometheusMetricsCore)
-    implementation(libs.ktorSerializationJackson)
-    implementation(libs.jacksonDatatypeJsr310)
-    implementation(libs.logbackClassic)
-    implementation(libs.logstashLogbackEncoder)
-    implementation(libs.nimbusJoseJwt)
+    implementation(kelvinLibs.micrometer.prometheus)
+    implementation(libs.prometheus.metrics.core)
+    implementation(kelvinLibs.ktor.serialization.jackson)
+    implementation(kelvinLibs.jackson.datatype.jsr310)
+    implementation(kelvinLibs.logback.classic)
+    implementation(kelvinLibs.logstash.logback.encoder)
+    implementation(kelvinLibs.nimbus.jose.jwt)
 
     testImplementation(kotlin("test"))
-    testImplementation(libs.ktorServerTestHost)
+    testImplementation(kelvinLibs.ktor.server.test.host)
 }
 
 ktor {

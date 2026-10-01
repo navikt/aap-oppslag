@@ -1,18 +1,13 @@
-// Kotlin konfigurasjonen er gitt av pluginen 'aap.conventions' i buildSrc
-// og settings.gradle.kts
-
 plugins {
-    // Provides a no-op 'build' lifecycle task
     base
-    id("aap.conventions")
 }
 
-// Call the tasks of the subprojects
-subprojects {
-    // no-op; just ensuring subprojects are configured
-}
-for (taskName in listOf<String>("clean", "build", "assemble", "check")) {
+for (taskName in listOf("clean", "build", "assemble", "check")) {
     tasks.named(taskName) {
         dependsOn(subprojects.map { it.path + ":$taskName" })
     }
+}
+
+tasks.named("check") {
+    dependsOn(gradle.includedBuild("build-logic").task(":check"))
 }

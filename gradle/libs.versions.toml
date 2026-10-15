@@ -2,7 +2,7 @@
 kelvin = "2.0.173"
 prometheus = "1.9.0"
 jackson3-security-override = "3.2.3"
-netty = "4.2.18.Final"
+netty = "4.2.19.Final"
 
 [libraries]
 kelvin-server = { module = "no.nav.aap.kelvin:server", version.ref = "kelvin" }

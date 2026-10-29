@@ -27,7 +27,9 @@ class SafClient(private val safConfig: SafConfig) {
     private val httpClient = HttpClientFactory.create()
 
     suspend fun hentJson(oidcToken: OidcToken, callId: String, journalpostId: String): ByteArray {
-        val journalpostreq = graphqlQuery(oidcToken, SafRequest.hentJournalpost(journalpostId), callId)
+        val oboToken = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)
+
+        val journalpostreq = graphqlQuery(oboToken, SafRequest.hentJournalpost(journalpostId), callId)
         val journalpost = journalpostreq.data?.journalpostById?: throw SafException("Fant ikke journalpost for $journalpostId")
 
         val dokument = journalpost.dokumenter?.find {dokInfo ->
@@ -40,7 +42,7 @@ class SafClient(private val safConfig: SafConfig) {
             logger.error("innhold i journalpost: $journalpostreq")
         }
 
-        val response = restQuery(oidcToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")
+        val response = restQuery(oboToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")
 
         return when(response.status) {
             HttpStatusCode.OK -> response.body()
@@ -50,19 +52,22 @@ class SafClient(private val safConfig: SafConfig) {
     }
 
     suspend fun hentJournalpostSomDokumenter(journalpostId: String, oidcToken: OidcToken, callId: String): List<Dokument> {
-        val res = graphqlQuery(oidcToken, SafRequest.hentJournalpost(journalpostId), callId)
+        val oboToken = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)
+        val res = graphqlQuery(oboToken, SafRequest.hentJournalpost(journalpostId), callId)
         val journalposter = res.data?.journalpostById?.toDokumenter()
         return journalposter ?: emptyList()
     }
 
     suspend fun hentDokumenter(personident: String, oidcToken: OidcToken, callId: String): List<Dokument> {
-        val res = graphqlQuery(oidcToken, SafRequest.hentDokumenter(personident), callId)
+        val oboToken = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)
+        val res = graphqlQuery(oboToken, SafRequest.hentDokumenter(personident), callId)
         val journalposter = res.data?.dokumentoversiktSelvbetjening?.toDokumenter()
         return journalposter?: emptyList()
     }
 
     suspend fun hentDokument(oidcToken: OidcToken, journalpostId: String, dokumentId: String, callId: String): InputStream {
-        val response = restQuery(oidcToken, journalpostId, dokumentId, callId)
+        val oboToken = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)
+        val response = restQuery(oboToken, journalpostId, dokumentId, callId)
 
         return when (response.status) {
             HttpStatusCode.OK -> response.bodyAsChannel().toInputStream()
@@ -71,12 +76,11 @@ class SafClient(private val safConfig: SafConfig) {
         }
     }
 
-    private suspend fun graphqlQuery(oidcToken: OidcToken, query: SafRequest, callId: String): SafRespons {
-        val token = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)
+    private suspend fun graphqlQuery(oboToken: String, query: SafRequest, callId: String): SafRespons {
         val request = httpClient.post("${safConfig.baseUrl}/graphql") {
             accept(ContentType.Application.Json)
             header("Nav-Callid", callId)
-            bearerAuth(token)
+            bearerAuth(oboToken)
             contentType(ContentType.Application.Json)
             setBody(query)
         }
@@ -89,7 +93,7 @@ class SafClient(private val safConfig: SafConfig) {
     }
 
     private suspend fun restQuery(
-        oidcToken: OidcToken,
+        oboToken: String,
         journalpostId: String,
         dokumentId: String,
         callId: String,
@@ -97,7 +101,7 @@ class SafClient(private val safConfig: SafConfig) {
     ) =
         httpClient.get("${safConfig.baseUrl}/rest/hentdokument/$journalpostId/$dokumentId/$arkivtype") {
             header("Nav-Call-Id", callId)
-            bearerAuth(TokenXTokenProvider.oboToken(safConfig.audience, oidcToken))
+            bearerAuth(oboToken)
             contentType(ContentType.Application.Json)
         }
 }

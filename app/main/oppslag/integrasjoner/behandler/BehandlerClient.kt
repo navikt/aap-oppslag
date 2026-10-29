@@ -9,7 +9,7 @@ import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.isSuccess
 import io.prometheus.metrics.core.metrics.Summary
-import kotlinx.coroutines.runBlocking
+import no.nav.aap.komponenter.httpklient.exception.InternfeilException
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.BehandlerConfig
 import oppslag.auth.TokenXTokenProvider
@@ -27,23 +27,21 @@ private val clientLatencyStats = Summary.builder()
 class BehandlerClient(private val behandlerConfig: BehandlerConfig) {
     private val httpClient = HttpClientFactory.create()
 
-    fun hentBehandler(
+    suspend fun hentBehandler(
         oidcToken: OidcToken,
         callId: String?,
     ): List<BehandlerRespons> =
         clientLatencyStats.startTimer().use {
-            runBlocking {
-                val obotoken = TokenXTokenProvider.oboToken(behandlerConfig.audience, oidcToken)
-                val response = httpClient.get("${behandlerConfig.baseUrl}/api/person/v1/behandler/self") {
-                    accept(ContentType.Application.Json)
-                    header("Nav-Callid", callId)
-                    bearerAuth(obotoken)
-                }
-                if (response.status.isSuccess() || response.status.value == 409) {
-                    response.body()
-                } else {
-                    error("Feil mot behandler (${response.status}): ${response.bodyAsText()}")
-                }
+            val obotoken = TokenXTokenProvider.oboToken(behandlerConfig.audience, oidcToken)
+            val response = httpClient.get("${behandlerConfig.baseUrl}/api/person/v1/behandler/self") {
+                accept(ContentType.Application.Json)
+                header("Nav-Callid", callId)
+                bearerAuth(obotoken)
+            }
+            if (response.status.isSuccess() || response.status.value == 409) {
+                response.body()
+            } else {
+                throw InternfeilException("Feil mot behandleroppslag (${response.status}): ${response.bodyAsText()}")
             }
         }
 }

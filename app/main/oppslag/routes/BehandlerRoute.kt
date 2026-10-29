@@ -7,10 +7,12 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import java.util.UUID
-import oppslag.LOGGER
 import oppslag.auth.authToken
 import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.behandler.RegistrertBehandler
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger("BehandlerRoute")
 
 fun Route.behandlerRoute(behandler: BehandlerClient) {
     route("/fastlege") {
@@ -21,7 +23,7 @@ fun Route.behandlerRoute(behandler: BehandlerClient) {
                 .map { it.tilBehandler() }
 
             if (behandlersvar.size > 1) {
-                LOGGER.warn("Fant flere fastleger for bruker")
+                logger.warn("Fant flere fastleger for bruker")
             }
 
             call.respond(HttpStatusCode.OK, behandlersvar)

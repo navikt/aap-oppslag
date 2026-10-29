@@ -16,12 +16,14 @@ import io.ktor.server.plugins.NotFoundException
 import io.ktor.utils.io.jvm.javaio.toInputStream
 import java.io.InputStream
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
-import oppslag.LOGGER
 import oppslag.SafConfig
 import oppslag.auth.TokenXTokenProvider
 import oppslag.http.HttpClientFactory
+import org.slf4j.LoggerFactory
 
 class SafClient(private val safConfig: SafConfig) {
+    private val logger = LoggerFactory.getLogger(javaClass)
+
     private val httpClient = HttpClientFactory.create()
 
     suspend fun hentJson(oidcToken: OidcToken, callId: String, journalpostId: String): ByteArray {
@@ -34,8 +36,8 @@ class SafClient(private val safConfig: SafConfig) {
             } != null
         }
         if(dokument == null) throw NotFoundException("Fant ikke original for journalpost $journalpostId").also {
-            LOGGER.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
-            LOGGER.error("innhold i journalpost: $journalpostreq")
+            logger.error("Fant ikke orginalJson for søknad med journalpost: $journalpostId")
+            logger.error("innhold i journalpost: $journalpostreq")
         }
 
         val response = restQuery(oidcToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")

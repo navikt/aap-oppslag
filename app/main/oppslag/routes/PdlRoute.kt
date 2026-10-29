@@ -9,10 +9,12 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import java.util.UUID
 import no.nav.aap.komponenter.server.auth.IdentityProvider
-import oppslag.LOGGER
 import oppslag.auth.authToken
 import oppslag.auth.personident
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger("PdlRoute")
 
 fun Route.pdlRoute(pdl: PdlGraphQLClient) {
     authenticate(IdentityProvider.TOKENX.value) {
@@ -24,15 +26,15 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                     .onSuccess {
                         if (it != null) {
                             call.respond(HttpStatusCode.OK, it)
-                            LOGGER.trace("Hentet person")
+                            logger.trace("Hentet person")
                         } else {
                             call.respond(HttpStatusCode.NotFound, "Fant ikke person")
-                            LOGGER.warn("Fant ikke person")
+                            logger.warn("Fant ikke person")
                         }
                     }
                     .onFailure {
                         call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
-                        LOGGER.error("Feil ved henting av person", it)
+                        logger.error("Feil ved henting av person", it)
                     }
             }
             get("/barn") {
@@ -43,7 +45,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                     call.respond(HttpStatusCode.OK, it)
                 }
                 barn.onFailure {
-                    LOGGER.error("Feil ved henting av barn", it)
+                    logger.error("Feil ved henting av barn", it)
                     call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
                 }
             }
@@ -60,7 +62,7 @@ fun Route.pdlRoute(pdl: PdlGraphQLClient) {
                 pdl.hentNavn(personident, call.authToken(), callId)
                     .onSuccess { call.respond(it) }
                     .onFailure {
-                        LOGGER.error("Feil ved henting av navn", it)
+                        logger.error("Feil ved henting av navn", it)
                         call.respond(HttpStatusCode.InternalServerError, "Feil ved oppslag i PDL: ${it.message}")
                     }
             }

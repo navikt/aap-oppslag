@@ -2,7 +2,6 @@ package oppslag
 
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.jackson.jackson
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -16,7 +15,6 @@ import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.request.httpMethod
 import io.ktor.server.request.path
-import io.ktor.server.response.respondText
 import io.ktor.server.routing.routing
 import io.micrometer.prometheusmetrics.PrometheusConfig
 import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
@@ -25,11 +23,8 @@ import no.nav.aap.komponenter.server.authentication
 import no.nav.aap.komponenter.server.common.MdcKeys
 import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.krr.KrrClient
-import oppslag.integrasjoner.pdl.PdlException
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
-import oppslag.integrasjoner.saf.DokumentIkkeFunnet
 import oppslag.integrasjoner.saf.SafClient
-import oppslag.integrasjoner.saf.SafException
 import oppslag.routes.actuator
 import oppslag.routes.behandlerRoute
 import oppslag.routes.krrRoute
@@ -38,10 +33,10 @@ import oppslag.routes.safRoute
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
-val LOGGER: Logger = LoggerFactory.getLogger("aap-oppslag")
+private val logger: Logger = LoggerFactory.getLogger("aap-oppslag")
 
 fun main() {
-    Thread.currentThread().setUncaughtExceptionHandler { _, e -> LOGGER.error("Uhåndtert feil", e) }
+    Thread.currentThread().setUncaughtExceptionHandler { _, e -> logger.error("Uhåndtert feil", e) }
     embeddedServer(Netty, port = 8080, module = Application::api).start(wait = true)
 }
 
@@ -67,23 +62,7 @@ fun Application.api(
         filter { call -> call.request.path().startsWith("/actuator").not() }
     }
 
-    install(StatusPages) {
-        exception<PdlException> { call, cause ->
-            LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
-            call.respondText(text = "Feil i PDL: ${cause.message}", status = HttpStatusCode.InternalServerError)
-        }
-        exception<SafException> { call, cause ->
-            LOGGER.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
-            call.respondText(text = "${cause.message}", status = HttpStatusCode.InternalServerError)
-        }
-        exception<DokumentIkkeFunnet> { call, cause ->
-            call.respondText(text = "${cause.message}", status = HttpStatusCode.NotFound)
-        }
-        exception<Throwable> { call, cause ->
-            LOGGER.error("Uhåndtert feil ved kall til '{}', cause: '{}'", call.request.local.uri, cause.message, cause)
-            call.respondText(text = "Feil i tjeneste: ${cause.message}", status = HttpStatusCode.InternalServerError)
-        }
-    }
+    install(StatusPages, StatusPagesConfigHelper.setup())
 
     install(ContentNegotiation) {
         jackson {

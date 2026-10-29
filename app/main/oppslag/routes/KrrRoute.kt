@@ -6,11 +6,13 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import io.ktor.server.routing.route
 import java.util.UUID
-import oppslag.LOGGER
 import oppslag.auth.authToken
 import oppslag.auth.personident
 import oppslag.integrasjoner.krr.Kontaktinformasjon
 import oppslag.integrasjoner.krr.KrrClient
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger("KrrRoute")
 
 fun Route.krrRoute(krr: KrrClient) {
     route("/krr") {
@@ -23,13 +25,13 @@ fun Route.krrRoute(krr: KrrClient) {
             val kontaktinformasjon = respons.personer?.get(personIdent)?.tilKontaktinfo()
 
             if (kontaktinformasjon != null) {
-                LOGGER.trace("Hentet kontaktinformasjon for bruker")
+                logger.trace("Hentet kontaktinformasjon for bruker")
 
                 call.respond(kontaktinformasjon)
             } else {
                 when (val feilmelding = respons.feil!![personIdent]) {
-                    "person_ikke_funnet" -> LOGGER.warn("Fant ikke kontaktinformasjon for bruker")
-                    else -> LOGGER.error("Fikk feilmelding fra KRR: $feilmelding")
+                    "person_ikke_funnet" -> logger.warn("Fant ikke kontaktinformasjon for bruker")
+                    else -> logger.error("Fikk feilmelding fra KRR: $feilmelding")
                 }
 
                 call.respond(Kontaktinformasjon())

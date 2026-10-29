@@ -1,5 +1,6 @@
 package oppslag.integrasjoner.krr
 
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
@@ -11,11 +12,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.prometheus.metrics.core.metrics.Summary
-import kotlinx.coroutines.runBlocking
+import no.nav.aap.komponenter.httpklient.exception.InternfeilException
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.KrrConfig
 import oppslag.auth.TokenXTokenProvider
-import oppslag.http.HttpClientFactory
 
 private const val KRR_CLIENT_SECONDS_METRICNAME = "krr_client_seconds"
 private val clientLatencyStats: Summary = Summary.builder()
@@ -26,30 +26,29 @@ private val clientLatencyStats: Summary = Summary.builder()
     .help("Latency krr, in seconds")
     .register()
 
-class KrrClient(private val krrConfig: KrrConfig) {
-    private val httpClient = HttpClientFactory.create()
-
-    fun hentKontaktinformasjon(
+class KrrClient(
+    private val httpClient: HttpClient,
+    private val krrConfig: KrrConfig,
+) {
+    suspend fun hentKontaktinformasjon(
         oidcToken: OidcToken,
         personIdent: String,
         callId: String,
     ): KrrRespons =
         clientLatencyStats.startTimer().use {
-            runBlocking {
-                val obotoken = TokenXTokenProvider.oboToken(krrConfig.audience, oidcToken)
-                val response = httpClient.post("${krrConfig.baseUrl}/rest/v1/personer") {
-                    contentType(ContentType.Application.Json)
-                    accept(ContentType.Application.Json)
-                    header("Nav-Call-Id", callId)
-                    bearerAuth(obotoken)
-                    setBody(KrrRequest(listOf(personIdent)))
-                }
+            val obotoken = TokenXTokenProvider.oboToken(krrConfig.audience, oidcToken)
+            val response = httpClient.post("${krrConfig.baseUrl}/rest/v1/personer") {
+                contentType(ContentType.Application.Json)
+                accept(ContentType.Application.Json)
+                header("Nav-Call-Id", callId)
+                bearerAuth(obotoken)
+                setBody(KrrRequest(listOf(personIdent)))
+            }
 
-                if (response.status.isSuccess()) {
-                    response.body()
-                } else {
-                    error("Feil mot krr (${response.status}): ${response.bodyAsText()}")
-                }
+            if (response.status.isSuccess()) {
+                response.body()
+            } else {
+                throw InternfeilException("Feil mot krr (${response.status}): ${response.bodyAsText()}")
             }
         }
 }

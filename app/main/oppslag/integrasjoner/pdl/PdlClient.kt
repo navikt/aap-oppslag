@@ -1,5 +1,6 @@
 package oppslag.integrasjoner.pdl
 
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
@@ -12,13 +13,12 @@ import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.PdlConfig
 import oppslag.auth.AzureTokenProvider
 import oppslag.auth.TokenXTokenProvider
-import oppslag.http.HttpClientFactory
 import oppslag.integrasjoner.pdl.PdlRequest.Companion.hentBarnInfo
 
 class PdlGraphQLClient(
+    private val httpClient: HttpClient,
     private val pdlConfig: PdlConfig
 ) {
-    private val httpClient = HttpClientFactory.create()
     private val tokenXTokenProvider = TokenXTokenProvider
     private val azureTokenProvider = AzureTokenProvider
 

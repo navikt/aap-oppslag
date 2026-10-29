@@ -21,6 +21,7 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import no.nav.aap.komponenter.server.auth.IdentityProvider
 import no.nav.aap.komponenter.server.authentication
 import no.nav.aap.komponenter.server.common.MdcKeys
+import oppslag.http.HttpClientFactory
 import oppslag.integrasjoner.behandler.BehandlerClient
 import oppslag.integrasjoner.krr.KrrClient
 import oppslag.integrasjoner.pdl.PdlGraphQLClient
@@ -44,10 +45,12 @@ fun Application.api(
     config: Config = Config(),
 ) {
     val prometheus = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
-    val pdl = PdlGraphQLClient(config.pdlConfig)
-    val krr = KrrClient(config.krrConfig)
-    val behandler = BehandlerClient(config.behandlerConfig)
-    val saf = SafClient(config.safConfig)
+
+    val httpClient = HttpClientFactory.create()
+    val pdl = PdlGraphQLClient(httpClient, config.pdlConfig)
+    val krr = KrrClient(httpClient, config.krrConfig)
+    val behandler = BehandlerClient(httpClient, config.behandlerConfig)
+    val saf = SafClient(httpClient, config.safConfig)
 
     install(MicrometerMetrics) { registry = prometheus }
 

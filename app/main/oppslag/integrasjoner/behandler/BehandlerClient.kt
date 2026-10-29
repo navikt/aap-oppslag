@@ -1,5 +1,6 @@
 package oppslag.integrasjoner.behandler
 
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
@@ -13,7 +14,6 @@ import no.nav.aap.komponenter.httpklient.exception.InternfeilException
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.BehandlerConfig
 import oppslag.auth.TokenXTokenProvider
-import oppslag.http.HttpClientFactory
 
 private const val BEHANDLER_CLIENT_SECONDS_METRICNAME = "behandler_client_seconds"
 private val clientLatencyStats = Summary.builder()
@@ -24,9 +24,10 @@ private val clientLatencyStats = Summary.builder()
     .help("Latency behandler, in seconds")
     .register()
 
-class BehandlerClient(private val behandlerConfig: BehandlerConfig) {
-    private val httpClient = HttpClientFactory.create()
-
+class BehandlerClient(
+    private val httpClient: HttpClient,
+    private val behandlerConfig: BehandlerConfig
+) {
     suspend fun hentBehandler(
         oidcToken: OidcToken,
         callId: String?,

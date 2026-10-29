@@ -1,5 +1,6 @@
 package oppslag.integrasjoner.krr
 
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
@@ -15,7 +16,6 @@ import no.nav.aap.komponenter.httpklient.exception.InternfeilException
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.KrrConfig
 import oppslag.auth.TokenXTokenProvider
-import oppslag.http.HttpClientFactory
 
 private const val KRR_CLIENT_SECONDS_METRICNAME = "krr_client_seconds"
 private val clientLatencyStats: Summary = Summary.builder()
@@ -26,9 +26,10 @@ private val clientLatencyStats: Summary = Summary.builder()
     .help("Latency krr, in seconds")
     .register()
 
-class KrrClient(private val krrConfig: KrrConfig) {
-    private val httpClient = HttpClientFactory.create()
-
+class KrrClient(
+    private val httpClient: HttpClient,
+    private val krrConfig: KrrConfig,
+) {
     suspend fun hentKontaktinformasjon(
         oidcToken: OidcToken,
         personIdent: String,

@@ -1,5 +1,6 @@
 package oppslag.integrasjoner.saf
 
+import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
@@ -18,13 +19,13 @@ import java.io.InputStream
 import no.nav.aap.komponenter.httpklient.httpclient.tokenprovider.OidcToken
 import oppslag.SafConfig
 import oppslag.auth.TokenXTokenProvider
-import oppslag.http.HttpClientFactory
 import org.slf4j.LoggerFactory
 
-class SafClient(private val safConfig: SafConfig) {
+class SafClient(
+    private val httpClient: HttpClient,
+    private val safConfig: SafConfig
+) {
     private val logger = LoggerFactory.getLogger(javaClass)
-
-    private val httpClient = HttpClientFactory.create()
 
     suspend fun hentJson(oidcToken: OidcToken, callId: String, journalpostId: String): ByteArray {
         val oboToken = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)

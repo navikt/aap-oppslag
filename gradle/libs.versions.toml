@@ -1,7 +1,7 @@
 [versions]
 kelvin = "2.0.198"
-prometheus = "1.9.0"
-jackson3-security-override = "3.2.3"
+prometheus = "1.10.0"
+jackson3-security-override = "3.2.4"
 netty = "4.2.19.Final"
 
 [libraries]

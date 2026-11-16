@@ -12,7 +12,7 @@ include("app")
 dependencyResolutionManagement {
     versionCatalogs {
         create("kelvinLibs") {
-            from("no.nav.aap.kelvin:version-catalog:2.0.198")
+            from("no.nav.aap.kelvin:version-catalog:3.0.3")
         }
     }
     @Suppress("UnstableApiUsage")

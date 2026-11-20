@@ -4,9 +4,9 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.prepareGet
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.client.statement.bodyAsText
@@ -43,7 +43,7 @@ class SafClient(
             logger.error("innhold i journalpost: $journalpostreq")
         }
 
-        val response = restQuery(oboToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL")
+        val response = restQuery(oboToken, journalpostId, dokument.dokumentInfoId, callId, "ORIGINAL").execute()
 
         return when(response.status) {
             HttpStatusCode.OK -> response.body()
@@ -66,14 +66,21 @@ class SafClient(
         return journalposter?: emptyList()
     }
 
-    suspend fun hentDokument(oidcToken: OidcToken, journalpostId: String, dokumentId: String, callId: String): InputStream {
+    suspend fun hentDokument(
+        oidcToken: OidcToken,
+        journalpostId: String,
+        dokumentId: String,
+        callId: String,
+        håndterDokument: suspend (InputStream) -> Unit,
+    ) {
         val oboToken = TokenXTokenProvider.oboToken(safConfig.audience, oidcToken)
-        val response = restQuery(oboToken, journalpostId, dokumentId, callId)
 
-        return when (response.status) {
-            HttpStatusCode.OK -> response.bodyAsChannel().toInputStream()
-            HttpStatusCode.NotFound -> throw DokumentIkkeFunnet("Fant ikke dokument $dokumentId for journalpost $journalpostId")
-            else -> throw SafException("Feil fra saf: ${response.status} : ${response.bodyAsText()}")
+        restQuery(oboToken, journalpostId, dokumentId, callId).execute { response ->
+            when (response.status) {
+                HttpStatusCode.OK -> response.bodyAsChannel().toInputStream().use { håndterDokument(it) }
+                HttpStatusCode.NotFound -> throw DokumentIkkeFunnet("Fant ikke dokument $dokumentId for journalpost $journalpostId")
+                else -> throw SafException("Feil fra saf: ${response.status} : ${response.bodyAsText()}")
+            }
         }
     }
 
@@ -100,7 +107,7 @@ class SafClient(
         callId: String,
         arkivtype: String = "ARKIV"
     ) =
-        httpClient.get("${safConfig.baseUrl}/rest/hentdokument/$journalpostId/$dokumentId/$arkivtype") {
+        httpClient.prepareGet("${safConfig.baseUrl}/rest/hentdokument/$journalpostId/$dokumentId/$arkivtype") {
             header("Nav-Call-Id", callId)
             bearerAuth(oboToken)
             contentType(ContentType.Application.Json)

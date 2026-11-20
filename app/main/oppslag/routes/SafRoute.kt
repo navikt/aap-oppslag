@@ -28,20 +28,24 @@ fun Route.safRoute(saf: SafClient) {
             val callId = UUID.randomUUID().toString() //requireNotNull(call.request.header("Nav-CallId")) { "x-callid ikke satt" }
             val journalpostid = requireNotNull(call.parameters["journalpostid"]) { "journalpostid er ikke satt" }
             val dokumentid = requireNotNull(call.parameters["dokumentid"]) { "dokumentid er ikke satt" }
-            val filStream = saf.hentDokument(call.authToken(), journalpostid, dokumentid, callId)
-
-            call.response.header(
-                HttpHeaders.ContentDisposition,
-                ContentDisposition.Attachment
-                    .withParameter(
-                        ContentDisposition.Parameters.FileName,
-                        "${dokumentid}.pdf"
-                    )
-                    .toString()
-            )
-            filStream.use { strømmen ->
+            saf.hentDokument(call.authToken(), journalpostid, dokumentid, callId) { strømmen ->
+                call.response.header(
+                    HttpHeaders.ContentDisposition,
+                    ContentDisposition.Attachment
+                        .withParameter(
+                            ContentDisposition.Parameters.FileName,
+                            "${dokumentid}.pdf"
+                        )
+                        .toString()
+                )
                 call.respondOutputStream {
-                    strømmen.copyTo(this)
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    while (true) {
+                        val antallLesteBytes = strømmen.read(buffer)
+                        if (antallLesteBytes == -1) break
+                        write(buffer, 0, antallLesteBytes)
+                        flush()
+                    }
                 }
             }
         }

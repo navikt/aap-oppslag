@@ -3,6 +3,7 @@ package oppslag
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import io.ktor.server.response.respondText
+import io.ktor.utils.io.ClosedByteChannelException
 import oppslag.integrasjoner.pdl.PdlException
 import oppslag.integrasjoner.saf.DokumentIkkeFunnet
 import oppslag.integrasjoner.saf.SafException
@@ -14,6 +15,9 @@ object StatusPagesConfigHelper {
     fun setup(): StatusPagesConfig.() -> Unit = {
         exception<Throwable> { call, cause ->
             when (cause) {
+                is ClosedByteChannelException -> {
+                    logger.info("Forbindelsen ble lukket under kall til '{}'", call.request.local.uri)
+                }
                 is PdlException -> {
                     logger.error("Uhåndtert feil ved kall til '{}'", call.request.local.uri, cause)
                     call.respondText(text = "Feil i PDL: ${cause.message}", status = HttpStatusCode.InternalServerError)
